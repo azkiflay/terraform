@@ -34,6 +34,7 @@ In Ubuntu/Debian, Terraform can be installed using the following steps.
     touch ~/.bashrc
     terraform -install-autocomplete # Restart your shell to enable autocomplete
 ```
+Installation instructions on other operating systems are available [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

@@ -11,7 +11,7 @@ Apart from Terraform, there are other provisioning tools, including Puppet, Chef
 * Packer + Kubernetes + Docker + Terraform: Server templating of Kubernetes and Docker using Packer, followed by deployment of Kubernetes cluster using Terraform.
 
 # Terraform and Configuration Management
-Terraform is an IaC. Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
+Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
 ## On lauch setup using shell scripts
 On launch, Terraform can be configured to create and instantiate infrastructed by running a shell script.
 

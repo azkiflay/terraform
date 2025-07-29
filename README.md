@@ -10,6 +10,31 @@ Apart from Terraform, there are other provisioning tools, including Puppet, Chef
 * **Packer + Terraform**: Server templating using Packer, followed by VM deployment using Terraform.
 * **Packer + Kubernetes + Docker + Terraform**: Server templating of Kubernetes and Docker using Packer, followed by deployment of Kubernetes cluster using Terraform.
 
+# Installation
+In Ubuntu/Debian, Terraform can be installed using the following steps.
+```bash
+    # Install gnupg and software-properties-common packages 
+    sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+    # Install HashiCorp's GPG key.
+    wget -O- https://apt.releases.hashicorp.com/gpg | \
+    gpg --dearmor | \
+    sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+    # Verify the GPG key's fingerprint.
+    gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint # The gpg command reports the key fingerprint
+    # Add the official HashiCorp repository to your system
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    # Update apt to download the package information from the HashiCorp repository
+    sudo apt update
+    # Install Terraform from the new repository
+    sudo apt-get install terraform
+    # Verify installation
+    terraform -help # Successful if you get help message from terraform.
+    terraform plan -help
+    # Enable tab completion
+    touch ~/.bashrc
+    terraform -install-autocomplete # Restart your shell to enable autocomplete
+```
+
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
 ## On lauch setup using shell scripts

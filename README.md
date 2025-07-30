@@ -72,7 +72,13 @@ If successful, "*terraform plan*" will show you what changes will be implemented
 </p>
 <p align="center"><strong>Figure 2:</strong> Terraform plan </p>
 
-In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. The actual creation of the EC2 instance occurs when "*terraform apply*" is run. After displaying the actions that it will take on approval, Terraform prompts you to enter **yes** to confirm. When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3. Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online. 
+In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. The actual creation of the EC2 instance occurs when "*terraform apply*" is run. 
+
+```bash
+    terraform apply
+```
+
+After displaying the actions that it will take on approval, Terraform prompts you to enter **yes** to confirm. When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3. Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online. 
 <figure>
 <table>
   <tr>

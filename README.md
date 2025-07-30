@@ -58,7 +58,7 @@ Terraform is init
 ```
 The *init* command needs to be run to start a new Terraform code. Figure 1 shows an example output with an AWS provider.
 <p align="center">
-  <img src="figures/terraform_init.png" width="500" height="300"/>
+  <img src="figures/terraform_init.png"/> <!-- width="400" height="200"/> --> <br>
 </p>
 <p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
 
@@ -69,7 +69,7 @@ To run the following command, ensure to export the user credentials as shown ear
 If successful, "*terraform plan*" will show you what changes will be implemented whenthe plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
 
 <p align="center">
-  <img src="figures/terraform_plan.png" width="600" height="400"/>
+  <img src="figures/terraform_plan.png"/> <!-- width="400" height="200"/> --> <br>
 </p>
 <p align="center"><strong>Figure 2:</strong> Terraform plan </p>
 
@@ -84,10 +84,10 @@ After displaying the actions that it will take on approval, Terraform prompts yo
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_apply.png" width="200" height="100"/><br>
+      <img src="figures/terraform_apply.png"/> <!-- width="400" height="200"/> --> <br>
     </td>
     <td>
-      <img src="figures/terraform_apply_2.png" width="600" height="400"/><br>
+      <img src="figures/terraform_apply_2.png"/> <!-- width="400" height="200"/> --> <br>
     </td>
   </tr>
 </table>
@@ -116,10 +116,10 @@ Now, Terraform modifies the existing instance by creating a *Name* tag, and sett
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_apply_3.png" width="400" height="200"/><br>
+      <img src="figures/terraform_apply_3.png"/> <!-- width="400" height="200"/> --> <br>
     </td>
     <td>
-      <img src="figures/terraform_apply_4.png" width="600" height="400"/><br>
+      <img src="figures/terraform_apply_4.png"/> <!-- width="400" height="200"/> --> <br>
     </td>
   </tr>
 </table>

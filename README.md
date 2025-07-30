@@ -78,7 +78,7 @@ In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. T
     terraform apply
 ```
 
-After displaying the actions that it will take on approval, Terraform prompts you to enter **yes** to confirm. When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3. Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online. 
+After displaying the actions that it will take on approval, Terraform prompts you to enter **yes** to confirm the plan of action. When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3. Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online. 
 <figure>
 <table>
   <tr>

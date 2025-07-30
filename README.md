@@ -137,7 +137,7 @@ To share the Terraform configurations with your team, you need to save it in ver
     git commit -m "Add a .gitignore file"
     git remote add origin git@github.com:azkiflay/terraform.git
     git push origin main # Share your commits to your team members.
-    git pull origin main # Get changes made by your team members.
+    git pull origin main # Get commits made by your team members.
 ```
 
 # Terraform and Configuration Management

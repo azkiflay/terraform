@@ -58,7 +58,7 @@ Terraform is init
 ```
 The *init* command needs to be run to start a new Terraform code. Figure 1 shows an example output with an AWS provider.
 <p align="center">
-  <img src="figures/terraform_init.png" width="600" height="400"/>
+  <img src="figures/terraform_init.png" width="400" height="200"/>
 </p>
 <p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
 
@@ -68,7 +68,7 @@ To run the following command, ensure to export the user credentials as shown ear
 ```
 If successful, "*terraform plan*" will show you what changes will be implemented whenthe plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
 <p align="center">
-  <img src="figures/terraform_plan.png" width="400" height="200"/>
+  <img src="figures/terraform_plan.png" width="600" height="400"/>
 </p>
 <p align="center"><strong>Figure 2:</strong> Terraform plan </p>
 

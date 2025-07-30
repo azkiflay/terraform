@@ -184,12 +184,12 @@ You need to run "*terraform plan*", and "*terraform apply*" again for these chan
 ```bash
   terraform plan
   terraform apply
-  curl http://<moodle_instance_public_ip:8080 # If successful, you should get "Hello, World" message.
+  curl http://<moodle_instance_public_ip:8080
 ```
 The final result after *apply* is shown in Figure 5 below.
 
 <p align="center">
-  <img src="figures/terraform_apply_5.png" width="500" height="300"/>
+  <img src="figures/terraform_apply_5.png" width="400" height="100"/>
 </p>
 <p align="center"><strong>Figure 5:</strong> Creating security group </p>
 

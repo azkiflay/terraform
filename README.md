@@ -197,8 +197,51 @@ If everything went well up to this point, the web server should be up and ready 
 ```bash
   curl http://<moodle_instance_public_ip:8080
 ```
-In both case, you should get a "Hello, World" message, confirming the Terraform successfully executed the plan accorindg to *main.tf*.
+In both case, you should get a "Hello, World" message, confirming the Terraform successfully executed the plan accorindg to *main.tf* and deployed the web server on the AWS EC2 instance.
 
+# Terraform Variables
+## Input variables
+Instead of defining the TCP port at different places, you can create a variable as follow, and refer to it every where it is needed.
+```bash
+  variable "server_port" {
+          description = "The port the server will use for HTTP requests"
+          type        = number
+          default     = 8080
+      }
+```
+If the default value for *server_port* variable is not set, you can specify the port as follows.
+
+```bash
+  terraform plan -var "server_port=8080"
+  terraform apply -var "server_port=8080"
+``` 
+Alternatively, the port can also be defined as *environment variable* as follows.
+```bash
+  export TF_VAR_server_port=8080
+  terraform plan
+  terraform apply
+```
+## Output Variables
+Output variables are used when you want to retrieve value of an attribute. For example, it may be helpful to reference the public IP address of the web server. You can do that using output variables as shown below.
+```bash
+  output "public_ip" {
+        value       = aws_instance.moodle.public_ip # This will output the public IP address of the web server
+        sensitive   = false # Set to true if you want to hide the output in the console
+        description = "The public IP address of the web server"
+    }
+```
+
+```bash
+  terraform apply
+  terraform output # Ensure the instance is running. Otherwise, the result will be --> public_ip=""
+  terraform output public_ip
+```
+By using output variables such as the public IP address in the example, you can access the attribute values and use them as required.
+
+# Web Server Cluster
+Cluster of web servers is necessary to minimize the risk of a single point of failure. Creating a cluster enables you to route and load balance traffic across multiple web servers. In AWS, clusters are handled using *Auto Scaling Group (ASG)*. ASG can launch a cluster of EC2 instances, monitor their health, replace failed ones, and adjust the cluster size according to traffic load.
+
+To create an ASG, you create a *launch configuration* as shown in the following.
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
@@ -209,9 +252,7 @@ On launch, Terraform can be configured to create and instantiate infrastructed b
     provider "aws" {
         region = "us-east-1"
     }
-    
-
-    
+       
 
     tags = { 
         Name = "moodle-instance"

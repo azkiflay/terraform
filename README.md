@@ -109,11 +109,7 @@ To implement the change, you need to run "*terraform apply*" again.
 ```bash
     terraform apply
 ```
-Now, Terraform modifies the existing instance by creating a *Name* tag, and setting the tag values as can be seen in Figure 4. The fact that Terraform displays "Refreshing state..." mesage shows that it knows that the instance has already been created.
-<p align="center">
-  
-</p>
-<p align="center"><strong>Figure 4:</strong> Modifying an existing instance </p>
+Now, Terraform modifies the existing instance by creating a *Name* tag, and setting the tag values as can be seen in Figure 4. The fact that Terraform displays "Refreshing state..." mesage shows that it knows that the instance has already been created. As a result, the instance has been assigned a name on AWS, as can be seen on the right side of Figure 4.
 
 <figure>
 <table>

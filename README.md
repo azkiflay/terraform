@@ -85,7 +85,7 @@ When successfully executed, "*terraform apply*" displays a message on the local 
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 3: </strong> Results of "*terraform apply*" </figcaption>
+<figcaption><strong>Figure 3: </strong> Results of **terraform apply** </figcaption>
 </figure>
 
 # Terraform and Configuration Management

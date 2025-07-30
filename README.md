@@ -73,17 +73,20 @@ If successful, "*terraform plan*" will show you what changes will be implemented
 <p align="center"><strong>Figure 2:</strong> Terraform initialization </p>
 
 In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. The actual creation of the EC2 instance occurs when "*terraform apply*" is run.
-When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3.
-<p align="center">
-  <img src="figures/terraform_apply.png" width="300" height="200"/>
-</p>
-<p align="center"><strong>Figure 3:</strong> Terraform initialization </p>
-
-Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online, displayed in Figure 4.
-<p align="center">
-  <img src="figures/terraform_apply_2.png" width="600" height="400"/>
-</p>
-<p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
+When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3. Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online.
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_apply.png" width="300" height="200"/><br>
+    </td>
+    <td>
+      <img src="figures/terraform_apply_2.png" width="600" height="400"/><br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 3: </strong> Results of "*terraform apply*" </figcaption>
+</figure>
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

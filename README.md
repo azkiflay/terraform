@@ -81,7 +81,7 @@ When successfully executed, "*terraform apply*" displays a message on the local 
       <img src="figures/terraform_apply.png" width="200" height="100"/><br>
     </td>
     <td>
-      <img src="figures/terraform_apply_2.png" width="500" height="300"/><br>
+      <img src="figures/terraform_apply_2.png" width="600" height="400"/><br>
     </td>
   </tr>
 </table>

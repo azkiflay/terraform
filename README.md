@@ -189,7 +189,7 @@ You need to run "*terraform plan*", and "*terraform apply*" again for these chan
 The final result after *apply* is shown in Figure 5 below.
 
 <p align="center">
-  <img src="figures/terraform_apply_5.png" width="400" height="200"/>
+  <img src="figures/terraform_apply_5.png" width="600" height="400"/>
 </p>
 <p align="center"><strong>Figure 5:</strong> Creating security group </p>
 

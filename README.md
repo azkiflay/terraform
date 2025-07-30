@@ -36,6 +36,55 @@ In Ubuntu/Debian, Terraform can be installed using the following steps.
 ```
 Installation steps for other operating systems are available [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
 
+# Connecting Terraform with an AWS Account
+* Create an IAM user on AWS with necessary permissions
+* Create Access Key ID and Secret Access Key for the user
+* Connect Terraform to the AWS user account by exporting the Access Key ID and Secret Access Key for the user as follows.
+```bash
+    # Needs to be done on very shell session.
+    export AWS_ACCESS_KEY_ID = _____
+    export AWS_SECRET_ACCESS_KEY = _____
+```
+Alternatively, the credentials can be set on AWS CLI as shown below, setting the access and secret keys long term.
+```bash
+    aws configure
+    nano ~/.aws/credentials
+```
+
+After creating the "*.tf*" configuration file, Terraform need to scan the code, identify the provider and download the relevant code to "*.terraform*" subdirectory. Moreover, Terraform creates a "*.terraform.lock.hcl*" file to keep a record of the downloaded provider code. All these are done by issuing the "*terraform init*" command as shown below.
+Terraform is init
+```bash
+    terraform init
+```
+The *init* command needs to be run to start a new Terraform code. Figure 1 shows an example output with an AWS provider.
+<p align="center">
+  <img src="figures/terraform_init.png" width="600" height="400"/>
+</p>
+<p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
+
+To run the following command, ensure to export the user credentials as shown earlier unless you are using the AWS CLI, in which case you would have set the user account details in "*~/.aws/credentials*".
+```bash
+    terraform plan
+```
+If successful, "*terraform plan*" will show you what changes will be implemented whenthe plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
+<p align="center">
+  <img src="figures/terraform_plan.png" width="600" height="400"/>
+</p>
+<p align="center"><strong>Figure 2:</strong> Terraform initialization </p>
+
+In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. The actual creation of the EC2 instance occurs when "*terraform apply*" is run.
+When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3.
+<p align="center">
+  <img src="figures/terraform_apply.png" width="600" height="400"/>
+</p>
+<p align="center"><strong>Figure 3:</strong> Terraform initialization </p>
+
+Importantly, the real-world effect of the command can be observed by the creation of the EC2 instance online, displayed in Figure 4.
+<p align="center">
+  <img src="figures/terraform_apply_2.png" width="600" height="400"/>
+</p>
+<p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
+
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
 ## On lauch setup using shell scripts
@@ -45,9 +94,7 @@ On launch, Terraform can be configured to create and instantiate infrastructed b
     provider "aws" {
         region = "us-east-1"
     }
-    resource "aws_instance" "moodle" {
-    ami           = data.aws_ami.ubuntu.id
-    instance_type = "t2.micro"
+    
 
     user_data = <<-EOF
     #!/bin/bash

@@ -184,6 +184,7 @@ You need to run "*terraform plan*", and "*terraform apply*" again for these chan
 ```bash
   terraform plan
   terraform apply
+  curl http://<moodle_instance_public_ip:8080 # If successful, you should get "Hello, World" message.
 ```
 The final result after *apply* is shown in Figure 5 below.
 
@@ -192,6 +193,11 @@ The final result after *apply* is shown in Figure 5 below.
 </p>
 <p align="center"><strong>Figure 5:</strong> Creating security group </p>
 
+If everything went well up to this point, the web server should be up and ready for access. To verify if that is the case, you can use the public IP of the aws_instance (moodle). Open a web browser and type in *http://<moodle_instance_public_ip:8080* on the address bar. Alternatively, you can test the web server using *curl* as shown below.
+```bash
+  curl http://<moodle_instance_public_ip:8080
+```
+In both case, you should get a "Hello, World" message, confirming the Terraform successfully executed the plan accorindg to *main.tf*.
 
 
 # Terraform and Configuration Management

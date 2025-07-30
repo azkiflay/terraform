@@ -109,11 +109,26 @@ To implement the change, you need to run "*terraform apply*" again.
 ```bash
     terraform apply
 ```
-Now, Terraform modifies the existing instance by setting tag values as can be seen in Figure 4.
+Now, Terraform modifies the existing instance by creating a *Name* tag, and setting the tag values as can be seen in Figure 4. The fact that Terraform displays "Refreshing state..." mesage shows that it knows that the instance has already been created.
 <p align="center">
-  <img src="figures/terraform_apply_3.png" width="600" height="400"/>
+  
 </p>
 <p align="center"><strong>Figure 4:</strong> Modifying an existing instance </p>
+
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_apply_3.png" width="600" height="400"/><br>
+    </td>
+    <td>
+      <img src="figures/terraform_apply_4.png" width="600" height="400"/><br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 4: </strong> Modifying an existing instance </figcaption>
+</figure>
+
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

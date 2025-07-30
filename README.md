@@ -119,7 +119,7 @@ Now, Terraform modifies the existing instance by creating a *Name* tag, and sett
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_apply_3.png" width="600" height="400"/><br>
+      <img src="figures/terraform_apply_3.png" width="400" height="200"/><br>
     </td>
     <td>
       <img src="figures/terraform_apply_4.png" width="600" height="400"/><br>

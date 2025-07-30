@@ -75,7 +75,7 @@ If successful, "*terraform plan*" will show you what changes will be implemented
 In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. The actual creation of the EC2 instance occurs when "*terraform apply*" is run.
 When successfully executed, "*terraform apply*" displays a message on the local machine Terraform is running, as shown in Figure 3.
 <p align="center">
-  <img src="figures/terraform_apply.png" width="600" height="400"/>
+  <img src="figures/terraform_apply.png" width="300" height="200"/>
 </p>
 <p align="center"><strong>Figure 3:</strong> Terraform initialization </p>
 

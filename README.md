@@ -125,6 +125,20 @@ Now, Terraform modifies the existing instance by creating a *Name* tag, and sett
 <figcaption><strong>Figure 4: </strong> Modifying an existing instance </figcaption>
 </figure>
 
+To share the Terraform configurations with your team, you need to save it in version control system (VCS).
+```bash
+    cd aws
+    git init
+    git add main.tf .terraform.lock.hcl 
+    git commit -m "Initial commit"
+    mkdir .gitignore
+    mv .terraform .gitignore
+    git add .gitignore 
+    git commit -m "Add a .gitignore file"
+    git remote add origin git@github.com:azkiflay/terraform.git
+    git push origin main # Share your commits to your team members.
+    git pull origin main # Get changes made by your team members.
+```
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

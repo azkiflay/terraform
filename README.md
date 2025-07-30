@@ -58,7 +58,7 @@ Terraform is init
 ```
 The *init* command needs to be run to start a new Terraform code. Figure 1 shows an example output with an AWS provider.
 <p align="center">
-  <img src="figures/terraform_init.png" width="400" height="200"/>
+  <img src="figures/terraform_init.png" width="500" height="300"/>
 </p>
 <p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
 

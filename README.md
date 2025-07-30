@@ -42,8 +42,8 @@ Installation steps for other operating systems are available [here](https://deve
 * Connect Terraform to the AWS user account by exporting the Access Key ID and Secret Access Key for the user as follows.
 ```bash
     # Needs to be done on very shell session.
-    export AWS_ACCESS_KEY_ID = _____
-    export AWS_SECRET_ACCESS_KEY = _____
+    export AWS_ACCESS_KEY_ID=... # Replace ... with your key
+    export AWS_SECRET_ACCESS_KEY=... # Replace ... with your key
 ```
 Alternatively, the credentials can be set on AWS CLI as shown below, setting the access and secret keys long term.
 ```bash
@@ -67,6 +67,7 @@ To run the following command, ensure to export the user credentials as shown ear
     terraform plan
 ```
 If successful, "*terraform plan*" will show you what changes will be implemented whenthe plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
+
 <p align="center">
   <img src="figures/terraform_plan.png" width="600" height="400"/>
 </p>
@@ -102,7 +103,7 @@ Note that the EC2 instance on AWS was created with the "*terraform apply*" comma
 As can be seen in Figure 3, the instance does not have a name. You can give it a name by adding the following to the "*main.tf*" file, by adding it after *instance_type = "t2.micro"* line.
 ```bash
     tags = {
-            Name = "moodle_2"
+            Name = "moodle"
         }
 ```
 To implement the change, you need to run "*terraform apply*" again.
@@ -125,20 +126,67 @@ Now, Terraform modifies the existing instance by creating a *Name* tag, and sett
 <figcaption><strong>Figure 4: </strong> Modifying an existing instance </figcaption>
 </figure>
 
-To share the Terraform configurations with your team, you need to save it in version control system (VCS).
+Note that you need to save your Terraform configurations in a version control system (VCS) such as Git to be able to collaborate with your team. For example, you can create a Github repository and clone it. Moreover, ensure you add large Terraform files to "*.gitignore*" as follows.
 ```bash
-    cd aws
-    git init
-    git add main.tf .terraform.lock.hcl 
+    git clone https://github.com/azkiflay/terraform.git
+    terraform init
+    git add main.tf .terraform.lock.hcl
+    echo ".terraform/" >> .gitignore
+    echo terraform.tfstate >> .gitignore
+    echo terraform.tfstate.backup >> .gitignore
+    git add .gitignore
+    git add README.md
     git commit -m "Initial commit"
-    mkdir .gitignore
-    mv .terraform .gitignore
-    git add .gitignore 
-    git commit -m "Add a .gitignore file"
-    git remote add origin git@github.com:azkiflay/terraform.git
     git push origin main # Share your commits to your team members.
     git pull origin main # Get commits made by your team members.
 ```
+
+# Web Server Deployment
+To deploy a simple webserver on the EC2 instance that was created, you can add the following to the "*main.tf*", within the "moodle" resource.
+```bash 
+    user_data = <<-EOF
+            #!/bin/bash
+            echo "Hello, World" > index.html 
+            nohup busybox httpd -f -p 8080 & 
+            EOF
+        user_data_replace_on_change = true
+```
+
+To allow traffic to the web server, you need to create another resource, which specifies a security group for that purpose. This is shown in the following snippet.
+```bash
+    resource "aws_security_group" "moodle_sg" { 
+        name = "moodle_sg_allow_tcp_8080"
+        description = "Allow TCP traffic on port 8080"
+        ingress { 
+            from_port = 8080
+            protocol = "tcp"
+            to_port = 8080
+            cidr_blocks = ["0.0.0.0/0"] # Allow traffic from all possible IP addresses
+            }
+    }
+```
+
+Subsequently, the "*moodle*" instance needs to know about the security group that was created. To do that, you add the following in the first "moodle" resource as follows.
+```bash
+    resource "aws_instance" "moodle" {
+        ami = "ami-000d841032e72b43c" 
+        instance_type = "t2.micro"
+        vpc_security_group_ids = [aws_security_group.moodle_sg.id] # Security group
+        ...
+```
+
+You need to run "*terraform plan*", and "*terraform apply*" again for these changes to take effect.
+```bash
+  terraform plan
+  terraform apply
+```
+The final result after *apply* is shown in Figure 5 below.
+
+<p align="center">
+  <img src="figures/terraform_apply_5.png" width="600" height="400"/>
+</p>
+<p align="center"><strong>Figure 5:</strong> Creating security group </p>
+
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
@@ -151,11 +199,7 @@ On launch, Terraform can be configured to create and instantiate infrastructed b
     }
     
 
-    user_data = <<-EOF
-    #!/bin/bash
-    echo "Hello, World" > index.html 
-    nohup busybox httpd -f -p 8080 & 
-    EOF
+    
 
     tags = { 
         Name = "moodle-instance"

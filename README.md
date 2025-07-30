@@ -78,7 +78,7 @@ In this case, an Amazon Elastic Computer Cloud (EC2) instance will be created. T
     terraform apply
 ```
 
-After displaying the actions that it will take on approval, Terraform prompts you to enter **yes** to confirm the plan. When successfully executed, "*terraform apply*" displays a message on the local machine on which Terraform is running as shown in Figure 3. Moreover, the real-world effect of the command can be observed by the creation of an EC2 instance on AWS, as displayed to the right of Figure 3. 
+After displaying the actions that it will take on approval, Terraform prompts you to enter **yes** to confirm the plan. When successfully executed, "*terraform apply*" displays a message on the local machine on which Terraform is running as shown in Figure 3. Moreover, the real-world effect of the command can be observed by the creation of an EC2 instance on AWS, as displayed to the right of Figure 3.
 <figure>
 <table>
   <tr>
@@ -92,6 +92,12 @@ After displaying the actions that it will take on approval, Terraform prompts yo
 </table>
 <figcaption><strong>Figure 3: </strong> Results of terraform apply </figcaption>
 </figure>
+
+Note that the EC2 instance on AWS was created with the "*terraform apply*" command, and not by logging in to the EC2 console on AWS. Terraform was able to connect to the AWS account because it knows the credentials since they were set using export AWS_ACCESS_KEY_ID = ..." and "export AWS_SECRET_ACCESS_KEY = ...". To confirm whether Terraform has got you AWS account details, you can compare the keys in your account and compare them with the keys Terraform has locally, which can be obtained by the following commands. The respective values for AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY should be the same locally and on your AWS account.
+```bash
+    echo $AWS_ACCESS_KEY_ID
+    echo $AWS_SECRET_ACCESS_KEY
+```
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

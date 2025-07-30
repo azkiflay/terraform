@@ -4,7 +4,7 @@ provider "aws" {
     resource "aws_instance" "moodle" {
         ami = "ami-000d841032e72b43c" # --> ubuntu-2004-vm-circleci-classic-1727797387 # UEFI boot required --> "ami-00015f5b5bf56e076" # More ami's https://aws.amazon.com/marketplace
         instance_type = "t2.micro" # More at https://aws.amazon.com/ec2/instance-types/
-        vpc_security_group_ids = [aws_security_group.moodle_sg.id]
+        vpc_security_group_ids = [aws_security_group.moodle_security_group.id]
         tags = {
             Name = "moodle"
         }
@@ -17,8 +17,8 @@ provider "aws" {
 
         user_data_replace_on_change = true # --> forcefully terminate the original instance and create a new one to ensure user data script is executed.
     }
-    resource "aws_security_group" "moodle_sg" { 
-        name = "moodle_sg_allow_tcp_8080"
+    resource "aws_security_group" "moodle_security_group" { 
+        name = "moodle_security_group_allow_tcp_8080"
         description = "Allow TCP traffic on port 8080"
         ingress { 
             from_port = 8080

@@ -175,6 +175,11 @@ Subsequently, the "*moodle*" instance needs to know about the security group tha
         ...
 ```
 
+In other words, the aws_security_group.moodle_sg has to be created first because the *aws_instance* depends on it. That and other dependency can be view using "*terraform graph*". While taking care of dependencies, Terraform creates as many resources in parallel as possible.
+```bash
+  terraform graph # View resource dependency tree.
+```
+
 You need to run "*terraform plan*", and "*terraform apply*" again for these changes to take effect.
 ```bash
   terraform plan
@@ -186,6 +191,7 @@ The final result after *apply* is shown in Figure 5 below.
   <img src="figures/terraform_apply_5.png" width="400" height="200"/>
 </p>
 <p align="center"><strong>Figure 5:</strong> Creating security group </p>
+
 
 
 # Terraform and Configuration Management

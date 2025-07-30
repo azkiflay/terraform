@@ -109,6 +109,11 @@ To implement the change, you need to run "*terraform apply*" again.
 ```bash
     terraform apply
 ```
+Now, Terraform modifies the existing instance by setting tag values as can be seen in Figure 4.
+<p align="center">
+  <img src="figures/terraform_apply_3.png" width="600" height="400"/>
+</p>
+<p align="center"><strong>Figure 4:</strong> Modifying an existing instance </p>
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

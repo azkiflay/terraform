@@ -99,6 +99,17 @@ Note that the EC2 instance on AWS was created with the "*terraform apply*" comma
     echo $AWS_SECRET_ACCESS_KEY
 ```
 
+As can be seen in Figure 3, the instance does not have a name. You can give it a name by adding the following to the "*main.tf*" file, by adding it after *instance_type = "t2.micro"* line.
+```bash
+    tags = {
+            Name = "moodle_2"
+        }
+```
+To implement the change, you need to run "*terraform apply*" again.
+```bash
+    terraform apply
+```
+
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
 ## On lauch setup using shell scripts

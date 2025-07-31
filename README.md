@@ -241,6 +241,7 @@ By using output variables such as the public IP address in the example, you can 
 # Web Server Cluster
 Cluster of web servers is necessary to minimize the risk of a single point of failure. Creating a cluster enables you to route and load balance traffic across multiple web servers. In AWS, clusters are handled using *Auto Scaling Group (ASG)*. ASG has several useful cluster functionalities. It can launch a cluster of EC2 instances, monitor their health, replace failed ones, and adjust the cluster size according to traffic load.
 
+## Creating ASG
 To create an ASG, you need to remove the *resource "aws_instance" "moodle"*. Because the resource can create only one instance, but we want to create multiple instances (cluster) to avoid a single point of failure as well as to load balance among them. Instead, create the following *launch template* that will be later used to create a cluster. Previously, a *launch configruation* was used to created ASGs, but that has been deprecated. The preferred way to create ASGs is through *aws_launch_template*. Among other parameters, a name for each instance can be given using *tag_specifications, as well as specification of what commands to run on instance launch using *user_data*. Now, commands in *user_data* have to be passed encoded using *base64encode()*. The *lifecycle* takes care of the order of creating a new instance to replacing an old one that is to be destroyed. Notably, necessary information from the old instance has to be copied to the new before the former is replaced by the latter.
 ```bash
   resource "aws_launch_template" "moodle" {
@@ -339,6 +340,7 @@ Notably, the ASG resource now created *5* EC2 instances based on *aws_launch_tem
 
 Five instances were created because the *"aws_autoscaling_group"* was created with "* desired_capacity = 5 *". Other related parameters are the *min_size* and *max_size* of the resource. Perhaps, the next change will show you how convenient (and risky, if not used carefully) Terraform makes it to provision infrastructure.
 
+## Destroying ASG
 Change values of *min_size*, *max_size*, and *desired_capacity* to *0* and apply the configuration to see what happens. 
 ```bash
   resource "aws_autoscaling_group" "moodle_asg" {
@@ -369,6 +371,20 @@ The results are shown in Figure 7. You can see that all the ASG instances were d
 </table>
 <figcaption><strong>Figure 7: </strong> Destroying ASG instances </figcaption>
 </figure>
+
+## Load Balancer
+The ASG creates multiple instances, leading to a challenge of accessing the service using a single IP address or domain name. Load balancers address this problem by sitting at the gateway to instances of the ASG, and re-directing traffic to each of them based on their status and load. Load balancer is made up of *listeners*, *listener rules*, and *target groups*.
+
+Add the following resources to *main.tf*.
+```bash
+  
+
+```
+
+```bash
+  terraform destroy
+```
+
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

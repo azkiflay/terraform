@@ -37,7 +37,7 @@ provider "aws" {
         tag_specifications {
                 resource_type = "instance"
                 tags = {
-                Name = "Moodle-ASG-Instance"
+                Name = "moodle-asg-instance"
             }
         }
     }
@@ -47,10 +47,13 @@ provider "aws" {
             id      = aws_launch_template.moodle.id
             version = "$Latest"
         }
-        min_size             = 0 # Minimum number of instances in the ASG
-        max_size             = 0 # Maximum number of instances in the ASG
-        desired_capacity     = 0 # Desired number of instances in the ASG
+        min_size             = 3 # Minimum number of instances in the ASG
+        max_size             = 10 # Maximum number of instances in the ASG
+        desired_capacity     = 5 # Desired number of instances in the ASG
         vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips # data.aws_subnets.default.ids  # <-- dynamic list of subnet IDs
+        
+        target_group_arns = [aws_lb_target_group.asg.arn] 
+        health_check_type = "ELB" # health_check_type    = "EC2" # Health check type for the ASG
     }
 
     data "aws_vpc" "default" { # Get the default VPC
@@ -71,7 +74,87 @@ provider "aws" {
         }
     }
 
+    output "alb_dns_name" {
+        value       = aws_lb.moodle.dns_name
+        description = "The domain name of the load balancer"
+    }
+
     output "subnet_ids" {
         value = data.aws_subnets.default.ids
     }
 
+# Load Balancer Configuration
+# Create an Application Load Balancer (ALB) for the ASG instances
+resource "aws_lb" "moodle" {
+    name = "moodle-alb"
+    load_balancer_type = "application"
+    subnets = data.aws_subnets.default.ids # Load balancer uses all subnets
+    security_groups = [aws_security_group.alb.id] # Security group for the load balancer
+}
+
+# Listener for the Load Balancer
+resource "aws_lb_listener" "http" {
+    load_balancer_arn = aws_lb.moodle.arn
+    port = 80
+    protocol = "HTTP"
+    # By default, return simple 404 page
+    default_action {
+        type = "fixed-response"
+        fixed_response {
+            content_type = "text/plain"
+            message_body = "404: page not found."
+            status_code = 404
+        }
+    }
+}
+
+# Security Group for the Load Balancer
+resource "aws_security_group" "alb" {
+    name        = "moodle-alb-sg"
+    # "Allow inbound HTTP requests"
+    ingress {
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    # Allow all outbound requests
+    egress {
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
+# Target Group for the ASG
+resource "aws_lb_target_group" "asg" {
+    name     = "moodle-target-group"
+    port     = var.server_port
+    protocol = "HTTP"
+    vpc_id   = data.aws_vpc.default.id
+    health_check {
+        path                = "/"
+        protocol            = "HTTP"
+        matcher =           "200"
+        interval            = 15
+        timeout             = 3
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+
+    }
+}
+
+resource "aws_lb_listener_rule" "asg" {
+    listener_arn = aws_lb_listener.http.arn
+    priority      = 100
+    condition {
+        path_pattern {
+            values = ["*"]
+        }
+    }
+    action {
+        type = "forward"
+        target_group_arn = aws_lb_target_group.asg.arn
+    }
+}

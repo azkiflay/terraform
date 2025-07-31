@@ -535,7 +535,7 @@ Finally, when the life cycle of the infrastructe comes to an end, you can delete
 ```bash
   terraform destroy
 ```
-The *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, basically ideintifying the right order to delete resources.Figure 9 shows Terraform's message on the local machine, and the EC2 instances being deleted on AWS.
+The *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, basically ideintifying the right order to delete resources.Figure 9 shows Terraform's message on the local machine, stating that *8* resources were destroyed. In addition, Figure 9 shows that the EC2 instances being deleted on AWS. On refresh, the instances are indeed terminated for good.
 
 <figure>
 <table>

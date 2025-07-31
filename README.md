@@ -239,9 +239,68 @@ Output variables are used when you want to retrieve value of an attribute. For e
 By using output variables such as the public IP address in the example, you can access the attribute values and use them as required.
 
 # Web Server Cluster
-Cluster of web servers is necessary to minimize the risk of a single point of failure. Creating a cluster enables you to route and load balance traffic across multiple web servers. In AWS, clusters are handled using *Auto Scaling Group (ASG)*. ASG can launch a cluster of EC2 instances, monitor their health, replace failed ones, and adjust the cluster size according to traffic load.
+Cluster of web servers is necessary to minimize the risk of a single point of failure. Creating a cluster enables you to route and load balance traffic across multiple web servers. In AWS, clusters are handled using *Auto Scaling Group (ASG)*. ASG has several useful cluster functionalities. It can launch a cluster of EC2 instances, monitor their health, replace failed ones, and adjust the cluster size according to traffic load.
 
-To create an ASG, you create a *launch configuration* as shown in the following.
+To create an ASG, you need to remove the *resource "aws_instance" "moodle"*. Because the resource can create only one instance, but we want to create multiple instances (cluster) to avoid a single point of failure as well as to load balance among them. Instead, create the following *launch template* that will be later used to create a cluster. Previously, a *launch configruation* was used to created ASGs, but that has been deprecated. The preferred way to create ASGs is through *aws_launch_template*.
+```bash
+  resource "aws_launch_template" "moodle" {
+        image_id      = "ami-000d841032e72b43c" # when not cluster --> ami = "ami-000d841032e72b43c" as above
+        instance_type = "t2.micro"
+    
+        lifecycle {
+            create_before_destroy = true
+        }
+        # user_data # Base64 encoded user data script required for the launch template
+    }
+```
+
+Based on the *aws_launch_template*, the ASG can be created as follows. Note that 
+```bash
+  resource "aws_autoscaling_group" "moodle_asg" {
+        launch_template {
+            id      = aws_launch_template.moodle.id
+            version = "$Latest"
+        }
+        min_size             = 0 # Minimum number of instances in the ASG
+        max_size             = 0 # Maximum number of instances in the ASG
+        desired_capacity     = 0 # Desired number of instances in the ASG
+        vpc_zone_identifier  =  data.aws_subnets.default.ids # <-- dynamic list of subnet IDs
+    }
+```
+
+In the ASG resource, the number of instances have been specified using *min_size*, *max_size* and *desired_capacity*. In other words, the ASG launches preferably *desired_capacity*, at least *min_size*, and a maximum of *max_size* EC2 instances. 
+
+Lastly, the ASG needs to be assigned a subnet, which can be set using *vpc_zone_identifier*. Virtual Private Cloud (VPC) are divided into subnets, creating smaller networks where infrastructure resources such as AWS EC2 instannces, databases and load balancers can be created. The are *public* and *private* subnets. While the latter are used for backend systems and internal networks, public subnets are connected to the Internet. Each subnet exists in one Availability Zone (AZ), which is an isolated data center in AWS. Deploying instances in multiple subnets ensures the availability of services when there is downtown at a particular AZ.
+
+In Terraform, the *vpc_zone_identifier* is a required argument for the *aws_autoscaling_group* resource, specifying the list of subnet IDs where the ASG should launch EC2 instances. The ASG will distribute instances across multiple subnets and AZs for high availability. While a specific subnet can be assigned to the ASG, note that it is better to retrieve it using Terraform to lookup the subnet dynamically. The *data* resource is used to query your AWS VPC and subnets, and other existing data through the provider's APIs. Filters can be used to fetch information of interest (e.g., public IP address).
+
+ To make these changes to your infrastructure code, add the following resouces to your *main.tf* file.
+
+```bash
+    data "aws_vpc" "default" { # Get the default VPC
+        default = true
+    }
+    
+    data "aws_subnets" "default" { # Get all subnets in that VPC
+        filter {
+            name   = "vpc-id"
+            values = [data.aws_vpc.default.id]
+        }
+    }
+
+    data "aws_subnets" "public" {
+        filter {
+            name   = "tag:Type"
+            values = ["public"]
+        }
+    }
+
+    output "subnet_ids" {
+        value = data.aws_subnets.default.ids
+    }
+```
+
+
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

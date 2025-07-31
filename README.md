@@ -355,7 +355,7 @@ Change values of *min_size*, *max_size*, and *desired_capacity* to *0* and apply
   terraform apply
 ```
 
-The results are shown in Figure 7.
+The results are shown in Figure 7. You can see that all the ASG instances were destroyed on AWS. This happened because *min_size*, *max_size*, and *desired_capacity* were all set to *0* in the Terraform configuration file. The ability to create and destryo infrastructure with this level of ease shows the power of Terraform as an Infrastructure as Code (IaC) tool. However, caution is necessary when setting the aforementioned parameter values to *0* in production environments.
 <figure>
 <table>
   <tr>
@@ -369,8 +369,6 @@ The results are shown in Figure 7.
 </table>
 <figcaption><strong>Figure 7: </strong> Destroying ASG instances </figcaption>
 </figure>
-
-As you can see in Figure 7, the all ASG instances were destroyed on AWS.
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

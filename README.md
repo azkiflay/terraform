@@ -531,11 +531,12 @@ As shown in Figure 9, when one instance of the ASG was terminated, a new one sta
 <figcaption><strong>Figure 8: </strong> Automatic replacement of unhealthy instance </figcaption>
 </figure>
 
-Finally, when the life cycle of the infrastructe comes to an end, you can delete it as follows. You must be careful with this one because there is now way to recover your infrastructure if you destroyed it in this way. Therefore, you must be certain that you do NOT need any of the resources in the project whose infrastructure is to be deleted. The operation takes somewhat longer time because Terraform need to work with a dependency tree, basically ideintifying the right order to delete resources.
+Finally, when the life cycle of the infrastructe comes to an end, you can delete it as follows. You must be careful with this one because there is now way to recover your infrastructure if you destroyed it in this way. Therefore, you must be certain that you do NOT need any of the resources in the project whose infrastructure is to be deleted. However, Terraform being an IaC tool, as long as you have your Terraform file, you can create the same infrastructure again by running "*terraform apply*".
 ```bash
   terraform destroy
 ```
-Figure 9 shows Terraform's message on the local machine, and the EC2 instances being deleted on AWS.
+The *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, basically ideintifying the right order to delete resources.Figure 9 shows Terraform's message on the local machine, and the EC2 instances being deleted on AWS.
+
 <figure>
 <table>
   <tr>

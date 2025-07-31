@@ -330,7 +330,7 @@ Figure 6 shows the results that were obtained in the preparation of this tutoria
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 6: </strong> Modifying an existing instance </figcaption>
+<figcaption><strong>Figure 6: </strong> Creating ASG instances </figcaption>
 </figure>
 
 On the left side of Figure 6, Terraform displays messages about progress, a count of the resources it created, modified and destroyed. More importantly, Terraform prepares the actual infrastructe as defined by the configuration files on AWS, as display on the right of Figure 6. You can see that *5* instances are created according to the template
@@ -367,7 +367,7 @@ The results are shown in Figure 7.
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 7: </strong> Modifying an existing instance </figcaption>
+<figcaption><strong>Figure 7: </strong> Destroying ASG instances </figcaption>
 </figure>
 
 As you can see in Figure 7, the all ASG instances were destroyed on AWS.

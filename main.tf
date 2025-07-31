@@ -5,7 +5,7 @@ provider "aws" {
 variable "server_port" {
     description = "The port the server will use for HTTP requests"
     type        = number
-    default     = 8080 # If not set, you can do "terraform plan -var "server_port=8080" before applying the plan.
+    default     = 80 # If not set, you can do "terraform plan -var "server_port=8080" before applying the plan.
 }
 
 data "aws_vpc" "default" { # Get the default VPC
@@ -43,13 +43,14 @@ resource "aws_launch_template" "moodle" {
     # user_data # Base64 encoded user data script required for the launch template
     user_data = base64encode(<<-EOF
         #!/bin/bash
-        echo "Hello, World" > index.html 
-        nohup busybox httpd -f -p 8080 & 
+        mkdir -p /var/www
+        echo "Hello, World" > /var/www/index.html
+        nohup busybox httpd -f -p 80 -h /var/www &
         EOF
     )
     tag_specifications {
-            resource_type = "instance"
-            tags = {
+        resource_type = "instance"
+        tags = {
             Name = "moodle-asg-instance"
         }
     }
@@ -81,7 +82,7 @@ resource "aws_lb" "moodle_alb" {
 # Listener for the Load Balancer
 resource "aws_lb_listener" "http" {
     load_balancer_arn = aws_lb.moodle_alb.arn
-    port = 80
+    port = var.server_port
     protocol = "HTTP"
     # By default, return simple 404 page
     default_action {
@@ -117,17 +118,17 @@ resource "aws_security_group" "alb" {
     name        = "moodle-alb-sg"
     # "Allow inbound HTTP requests"
     ingress {
-        from_port   = 80
-        to_port     = 80
+        from_port   = var.server_port
+        to_port     = var.server_port
         protocol    = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
     # Allow all outbound requests
     egress {
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        from_port   = 0 # Allow all inbound traffic
+        to_port     = 0 # Allow all outbound traffic
+        protocol    = "-1" # -1 means all protocols
+        cidr_blocks = ["0.0.0.0/0"] # Allow traffic to all possible IP addresses
     }
 }
 

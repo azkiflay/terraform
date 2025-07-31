@@ -1,17 +1,6 @@
 provider "aws" {
         region = "us-east-1"
     }
-    
-resource "aws_security_group" "moodle_sg" { 
-    name = "allow_tcp_8080"
-    description = "Allow TCP traffic on port 8080"
-    ingress { 
-        from_port = var.server_port # 8080
-        protocol = "tcp"
-        to_port = var.server_port # 8080
-        cidr_blocks = ["0.0.0.0/0"] # Allow traffic from all possible IP addresses
-        }
-}
 
 variable "server_port" {
     description = "The port the server will use for HTTP requests"
@@ -76,13 +65,13 @@ resource "aws_autoscaling_group" "moodle_asg" {
     desired_capacity     = 5 # Desired number of instances in the ASG
     vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips # data.aws_subnets.default.ids  # <-- dynamic list of subnet IDs
     
-    target_group_arns = [aws_lb_target_group.asg.arn] 
+    target_group_arns = [aws_lb_target_group.moodle_tg.arn] # Attach the ASG to the target group of the load balancer
     health_check_type = "ELB" # health_check_type    = "EC2" # "EC2" --> only minimum health check (i.e. up or down?)
 }
 
 # Load Balancer Configuration
 # Create an Application Load Balancer (ALB) for the ASG instances
-resource "aws_lb" "moodle" {
+resource "aws_lb" "moodle_alb" {
     name = "moodle-alb"
     load_balancer_type = "application"
     subnets = data.aws_subnets.default.ids # Load balancer uses all subnets
@@ -91,7 +80,7 @@ resource "aws_lb" "moodle" {
 
 # Listener for the Load Balancer
 resource "aws_lb_listener" "http" {
-    load_balancer_arn = aws_lb.moodle.arn
+    load_balancer_arn = aws_lb.moodle_alb.arn
     port = 80
     protocol = "HTTP"
     # By default, return simple 404 page
@@ -106,7 +95,7 @@ resource "aws_lb_listener" "http" {
 }
 
 # Target Group for the ASG
-resource "aws_lb_target_group" "asg" {
+resource "aws_lb_target_group" "moodle_tg" {
     name     = "moodle-target-group"
     port     = var.server_port
     protocol = "HTTP"
@@ -143,7 +132,7 @@ resource "aws_security_group" "alb" {
 }
 
 
-resource "aws_lb_listener_rule" "asg" {
+resource "aws_lb_listener_rule" "moodle_rule" {
     listener_arn = aws_lb_listener.http.arn
     priority      = 100
     condition {
@@ -153,11 +142,11 @@ resource "aws_lb_listener_rule" "asg" {
     }
     action {
         type = "forward"
-        target_group_arn = aws_lb_target_group.asg.arn
+        target_group_arn = aws_lb_target_group.moodle_tg.arn
     }
 }
 
 output "alb_dns_name" {
-    value       = aws_lb.moodle.dns_name
+    value       = aws_lb.moodle_alb.dns_name
     description = "The domain name of the load balancer"
 }

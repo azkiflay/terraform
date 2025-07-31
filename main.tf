@@ -45,7 +45,7 @@ resource "aws_launch_template" "moodle" {
         #!/bin/bash
         mkdir -p /var/www
         echo "Hello, World" > /var/www/index.html
-        nohup busybox httpd -f -p 80 -h /var/www &
+        nohup busybox httpd -f -p ${var.server_port} -h /var/www &
         EOF
     )
     tag_specifications {

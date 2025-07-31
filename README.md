@@ -496,6 +496,7 @@ Now, it is time to check the Terraform plan and apply it using "*terraform plan*
   terraform apply
 ```
 If you everything went according to the above steps, you should be able to something similar to the results displayed in Figure 8.
+
 <figure>
 <table>
   <tr>
@@ -508,6 +509,26 @@ If you everything went according to the above steps, you should be able to somet
   </tr>
 </table>
 <figcaption><strong>Figure 8: </strong> Elastic Load Balancer (ELB) </figcaption>
+</figure>
+
+Eight resources were added as shown by Terraform's message. As can been from the AWS Instnace list, **five** EC2 instances were created based on the configurations discussed earlier. Additionally, Terraform displayed the domain name of the load balancer as an output, namely, **alb_dns_name = "moodle-alb-1322738834.us-east-1.elb.amazonaws.com"**, which can be seen in Figure 8. The implication is that all the five EC2 instances in the cluster can be accessed using the single domain name.
+
+Note that the health of the EC2 instances in the cluster is checker regularly. Therefore, if one of the instance is overloaded with too many user requests, the load balancer identifies less busy instances and redirects traffic to them. Notably, i any of the instances fails for some reason, a new one will be created to replace it because the ASG works to maintain the desired number of instances as defined in the configuration file. This can be confirmed by selecting and terminating one of the EC2 instances on AWS.
+
+As shown in Figure 9, when one instance of the ASG was terminated, a new one started to be created automatically. When you refresh your browser after deleting one of the ASG instances, you will see a new one being created almost instantly. The one that has *Initializing* on the Status Check column is a new being created to replace the one that was terminated manually. The reason for termination can be something else, however as long as Terraform has been configured to keep a specific number of instances in the ASG, it will automatically create one if there are less number of EC2 instances than required.
+
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_terminate_1.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_terminate_2.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 8: </strong> Automatic replacement of unhealthy instance </figcaption>
 </figure>
 
 ```bash

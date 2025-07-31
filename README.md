@@ -507,7 +507,7 @@ If you everything went according to the above steps, you should be able to somet
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 7: </strong> Destroying ASG instances </figcaption>
+<figcaption><strong>Figure 7: </strong> Elastic Load Balancer (ELB) </figcaption>
 </figure>
 
 ```bash

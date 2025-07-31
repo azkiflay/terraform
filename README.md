@@ -358,6 +358,7 @@ Change values of *min_size*, *max_size*, and *desired_capacity* to *0* and apply
 ```
 
 The results are shown in Figure 7. You can see that all the ASG instances were destroyed on AWS. This happened because *min_size*, *max_size*, and *desired_capacity* were all set to *0* in the Terraform configuration file. The ability to create and destryo infrastructure with this level of ease shows the power of Terraform as an Infrastructure as Code (IaC) tool. However, caution is necessary when setting the aforementioned parameter values to *0* in production environments.
+
 <figure>
 <table>
   <tr>
@@ -373,13 +374,141 @@ The results are shown in Figure 7. You can see that all the ASG instances were d
 </figure>
 
 ## Load Balancer
-The ASG creates multiple instances, leading to a challenge of accessing the service using a single IP address or domain name. Load balancers address this problem by sitting at the gateway to instances of the ASG, and re-directing traffic to each of them based on their status and load. Load balancer is made up of *listeners*, *listener rules*, and *target groups*.
+The ASG above creates a web server cluster usign the multiple EC2 instances. One the one hand, there are multiple web servers each with its own IP address. On the other hand, you want users to access the service using a single IP address or domain name. Load balancers address this problem by sitting as a gateway to the EC2 instances of the ASG. Users access the web servers through a load balancer, which re-directs traffic based on the status and load of each EC2 instance. For this, you can use Amazon's *Elastic Load Balancer (ELB)* service. 
 
-Add the following resources to *main.tf*.
+Common types of ELB's include the following:
+* Application-layer Load Balancer (ALB), which load balances HTTP and HTTPS traffic
+* Network-layer Load Balancer (NLB), which load balances TCP, UDP and TLS traffic.
+
+For a web server, you can deploy ALB as the load balancer. ALB is made up of three components, namely, *Listener*, *Listener Rules*, and *Target Groups*. While a *Listener* specifies which port to listen on for requests, a *Listener Rule* decides where among *Target Groups* a request should be sent to. Finally, a *Target Group* refers to a group of server that process requests received from the load balancer. Moreover, server health checks are performed for each *Target Group* so that requests are sent to those that can handle them.
+
+To create a load balancer, you need to create the ALB-related resources, namely *listener*, *listener rule*, and *target group*. Moreover, you need to create a *security group* to allow traffic to the load balancer since its default rule is to block all incoming and outgoing traffic.
+
+Therefore, to create a load balancer in your infrastructure, first you need to create the ALB using the using the "*aws_lb*" as shown in the following.
 ```bash
-  
-
+  # Create an Application Load Balancer (ALB) for the ASG instances
+  resource "aws_lb" "moodle" {
+      name = "moodle-alb"
+      load_balancer_type = "application"
+      subnets = data.aws_subnets.default.ids # Load balancer uses all subnets
+      security_groups = [aws_security_group.alb.id] # Security group for the load balancer
+  }
 ```
+
+Secondly, add a "*aws_lb_listener*" for HTTP traffic as shown below, configuring the "*aws_lb*" to listen on port 80 among other settings.
+```bash
+  # Create a Listener for the Load Balancer
+  resource "aws_lb_listener" "http" {
+      load_balancer_arn = aws_lb.moodle.arn
+      port = 80
+      protocol = "HTTP"
+      # By default, return simple 404 page
+      default_action {
+          type = "fixed-response"
+          fixed_response {
+              content_type = "text/plain"
+              message_body = "404: page not found."
+              status_code = 404
+          }
+      }
+  }
+```
+
+Thirdly, create the *target group* using "*aws_lb_target_group*" as follows. To get latest data on each EC2 instance, the target groups probes the instances by sending HTTP requests periodically. 
+```bash
+  # Target Group for the ASG
+  resource "aws_lb_target_group" "asg" {
+      name     = "moodle-target-group"
+      port     = var.server_port
+      protocol = "HTTP"
+      vpc_id   = data.aws_vpc.default.id
+      health_check {
+          path                = "/"
+          protocol            = "HTTP"
+          matcher =           "200"
+          interval            = 15
+          timeout             = 3
+          healthy_threshold   = 2
+          unhealthy_threshold = 2
+
+      }
+  }
+```
+
+Fourthly, create a security group for the load balancer using "*aws_security_group*" as shown below, which allows incoming requests on port 80. Moreover, all outgoing requests should be allowed to be able to send health check requests to the EC2 instances, by setting "*from_port*", "*to_port*", and "*protocol*" to 0, 0, and -1 respectively.
+```bash
+  # Security Group for the Load Balancer
+  resource "aws_security_group" "alb" {
+      name        = "moodle-alb-sg"
+      # "Allow inbound HTTP requests"
+      ingress {
+          from_port   = 80
+          to_port     = 80
+          protocol    = "tcp"
+          cidr_blocks = ["0.0.0.0/0"]
+      }
+      # Allow all outbound requests
+      egress {
+          from_port   = 0
+          to_port     = 0
+          protocol    = "-1"
+          cidr_blocks = ["0.0.0.0/0"]
+      }
+  }
+``` 
+
+Fifthly, create a listener rule using "*aws_lb_listener_rule*" as shown below.
+```bash
+  resource "aws_lb_listener_rule" "asg" {
+    listener_arn = aws_lb_listener.http.arn # <--- resource "aws_lb_listener" "http"
+    priority      = 100
+    condition {
+        path_pattern {
+            values = ["*"]
+        }
+    }
+    action {
+        type = "forward"
+        target_group_arn = aws_lb_target_group.asg.arn
+    }
+}
+```
+
+Sixthly, add the following to the original ASG ("resource "aws_autoscaling_group" "moodle_asg") to connect it with the load balancer.
+```bash
+  resource "aws_autoscaling_group" "moodle_asg" {
+    ...
+    target_group_arns = [aws_lb_target_group.asg.arn] 
+    health_check_type = "ELB" # health_check_type    = "EC2" # "EC2" --> only minimum health check (i.e. up or down?)
+}
+```
+Finally, you want to know the IP address or domain name of the load balancer so that your web server can be accessed with that. To that end, add the following output using "*alb_dns_name*" as shown below.
+```bash
+  output "alb_dns_name" {
+    value       = aws_lb.moodle.dns_name
+    description = "The domain name of the load balancer"
+  }
+```
+
+Now, it is time to check the Terraform plan and apply it using "*terraform plan*" and "*terraform apply*", respectively.
+```bash
+  terraform plan
+  terraform apply
+```
+If you everything went according to the above steps, you should be able to something similar to the results displayed in Figure 8.
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_alb_1.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_alb_2.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 7: </strong> Destroying ASG instances </figcaption>
+</figure>
 
 ```bash
   terraform destroy

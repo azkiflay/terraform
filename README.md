@@ -330,9 +330,47 @@ Figure 6 shows the results that were obtained in the preparation of this tutoria
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 4: </strong> Modifying an existing instance </figcaption>
+<figcaption><strong>Figure 6: </strong> Modifying an existing instance </figcaption>
 </figure>
 
+On the left side of Figure 6, Terraform displays messages about progress, a count of the resources it created, modified and destroyed. More importantly, Terraform prepares the actual infrastructe as defined by the configuration files on AWS, as display on the right of Figure 6. You can see that *5* instances are created according to the template
+
+Notably, the ASG resource now created *5* EC2 instances based on *aws_launch_template*. In other words, five different web servers have been deployed. As stated earlier, deploying a cluster of web servers enables you to load balance among them as well as to ensure high availability of the service in case some of them fail for some reason. 
+
+Five instances were created because the *"aws_autoscaling_group"* was created with "* desired_capacity = 5 *". Other related parameters are the *min_size* and *max_size* of the resource. Perhaps, the next change will show you how convenient (and risky, if not used carefully) Terraform makes it to provision infrastructure.
+
+Change values of *min_size*, *max_size*, and *desired_capacity* to *0* and apply the configuration to see what happens. 
+```bash
+  resource "aws_autoscaling_group" "moodle_asg" {
+        ...
+        min_size             = 0 # Minimum number of instances in the ASG
+        max_size             = 0 # Maximum number of instances in the ASG
+        desired_capacity     = 0 # Desired number of instances in the ASG
+        vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips <-- dynamic list of subnet IDs
+  }
+```
+
+```bash
+  terraform plan
+  terraform apply
+```
+
+The results are shown in Figure 7.
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_asg_3.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_asg_4.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 7: </strong> Modifying an existing instance </figcaption>
+</figure>
+
+As you can see in Figure 7, the all ASG instances were destroyed on AWS.
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.

@@ -47,9 +47,9 @@ provider "aws" {
             id      = aws_launch_template.moodle.id
             version = "$Latest"
         }
-        min_size             = 3 # Minimum number of instances in the ASG
-        max_size             = 10 # Maximum number of instances in the ASG
-        desired_capacity     = 5 # Desired number of instances in the ASG
+        min_size             = 0 # Minimum number of instances in the ASG
+        max_size             = 0 # Maximum number of instances in the ASG
+        desired_capacity     = 0 # Desired number of instances in the ASG
         vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips # data.aws_subnets.default.ids  # <-- dynamic list of subnet IDs
     }
 

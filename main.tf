@@ -31,15 +31,22 @@ data "aws_subnets" "default" { # Get all subnets in that VPC
     }
 }
 
-data "aws_subnets" "public" {
-    filter {
-        name   = "tag:Type"
-        values = ["public"]
-    }
-}
-
 output "subnet_ids" {
     value = data.aws_subnets.default.ids
+}
+
+data "aws_subnets" "public" {
+  filter {
+    name   = "tag:Type"
+    values = ["public"]
+  }
+}
+
+data "aws_subnets" "private" {
+  filter {
+    name   = "tag:Type"
+    values = ["private"]
+  }
 }
 
 resource "aws_launch_template" "moodle" {
@@ -65,14 +72,15 @@ resource "aws_launch_template" "moodle" {
 }
 
 resource "aws_autoscaling_group" "moodle" {
+    depends_on = [aws_launch_template.moodle, data.aws_subnets.default]
     launch_template {
         id      = aws_launch_template.moodle.id
-        version = "$Latest"
+        version = "$Latest" # version = aws_launch_template.moodle.latest_version
     }
     min_size             = 3 # Minimum number of instances in the ASG
     max_size             = 10 # Maximum number of instances in the ASG 
     desired_capacity     = 5 # Desired number of instances in the ASG
-    vpc_zone_identifier  =  data.aws_subnets.public.ids # # <-- must be public subnets.
+    vpc_zone_identifier  =  data.aws_subnets.public.ids # data.aws_subnets.default.ids # data.aws_subnets.public.ids # # <-- must be public subnets.
     
     target_group_arns = [aws_lb_target_group.moodle.arn] # Attach the ASG to the target group of the load balancer
     health_check_type = "ELB" # health_check_type    = "EC2" # "EC2" --> only minimum health check (i.e. up or down?)
@@ -83,7 +91,7 @@ resource "aws_autoscaling_group" "moodle" {
 resource "aws_lb" "moodle" {
     name = "moodle"
     load_balancer_type = "application"
-    subnets = data.aws_subnets.default.ids # Load balancer uses all subnets
+    subnets = data.aws_subnets.public.ids # data.aws_subnets.public.ids # Load balancer uses all public subnets
     security_groups = [aws_security_group.moodle.id] # Security group for the load balancer
 }
 

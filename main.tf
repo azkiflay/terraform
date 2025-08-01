@@ -70,9 +70,9 @@ resource "aws_autoscaling_group" "moodle" {
         version = "$Latest"
     }
     min_size             = 3 # Minimum number of instances in the ASG
-    max_size             = 10 # Maximum number of instances in the ASG
+    max_size             = 10 # Maximum number of instances in the ASG 
     desired_capacity     = 5 # Desired number of instances in the ASG
-    vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle.public_ips # data.aws_subnets.default.ids  # <-- dynamic list of subnet IDs
+    vpc_zone_identifier  =  data.aws_subnets.public.ids # # <-- must be public subnets.
     
     target_group_arns = [aws_lb_target_group.moodle.arn] # Attach the ASG to the target group of the load balancer
     health_check_type = "ELB" # health_check_type    = "EC2" # "EC2" --> only minimum health check (i.e. up or down?)

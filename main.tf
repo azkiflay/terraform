@@ -1,11 +1,23 @@
-provider "aws" {
-        region = "us-east-1"
+# Terraform Configuration for Moodle Auto Scaling Group with Load Balancer
+terraform {
+  required_version = ">= 1.0.0, < 2.0.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
     }
+  }
+}
+
+# AWS Provider Configuration
+provider "aws" {
+    region = "us-east-1"
+}
 
 variable "server_port" {
     description = "The port the server will use for HTTP requests"
     type        = number
-    default     = 80 # If not set, you can do "terraform plan -var "server_port=8080" before applying the plan.
+    default     = 80 # If not set, you can do "terraform plan -var "server_port=80" before applying the plan.
 }
 
 data "aws_vpc" "default" { # Get the default VPC
@@ -26,12 +38,9 @@ data "aws_subnets" "public" {
     }
 }
 
-
-
 output "subnet_ids" {
     value = data.aws_subnets.default.ids
 }
-
 
 resource "aws_launch_template" "moodle" {
     image_id      = "ami-000d841032e72b43c" # when not cluster --> ami = "ami-000d841032e72b43c" as above
@@ -43,20 +52,19 @@ resource "aws_launch_template" "moodle" {
     # user_data # Base64 encoded user data script required for the launch template
     user_data = base64encode(<<-EOF
         #!/bin/bash
-        mkdir -p /var/www
-        echo "Hello, World" > /var/www/index.html
-        nohup busybox httpd -f -p ${var.server_port} -h /var/www &
+        echo "Hello, World" > index.html
+        nohup busybox httpd -f -p ${var.server_port} &
         EOF
     )
     tag_specifications {
         resource_type = "instance"
         tags = {
-            Name = "moodle-asg-instance"
+            Name = "moodle"
         }
     }
 }
 
-resource "aws_autoscaling_group" "moodle_asg" {
+resource "aws_autoscaling_group" "moodle" {
     launch_template {
         id      = aws_launch_template.moodle.id
         version = "$Latest"
@@ -64,24 +72,24 @@ resource "aws_autoscaling_group" "moodle_asg" {
     min_size             = 3 # Minimum number of instances in the ASG
     max_size             = 10 # Maximum number of instances in the ASG
     desired_capacity     = 5 # Desired number of instances in the ASG
-    vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips # data.aws_subnets.default.ids  # <-- dynamic list of subnet IDs
+    vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle.public_ips # data.aws_subnets.default.ids  # <-- dynamic list of subnet IDs
     
-    target_group_arns = [aws_lb_target_group.moodle_tg.arn] # Attach the ASG to the target group of the load balancer
+    target_group_arns = [aws_lb_target_group.moodle.arn] # Attach the ASG to the target group of the load balancer
     health_check_type = "ELB" # health_check_type    = "EC2" # "EC2" --> only minimum health check (i.e. up or down?)
 }
 
 # Load Balancer Configuration
 # Create an Application Load Balancer (ALB) for the ASG instances
-resource "aws_lb" "moodle_alb" {
-    name = "moodle-alb"
+resource "aws_lb" "moodle" {
+    name = "moodle"
     load_balancer_type = "application"
     subnets = data.aws_subnets.default.ids # Load balancer uses all subnets
-    security_groups = [aws_security_group.alb.id] # Security group for the load balancer
+    security_groups = [aws_security_group.moodle.id] # Security group for the load balancer
 }
 
 # Listener for the Load Balancer
 resource "aws_lb_listener" "http" {
-    load_balancer_arn = aws_lb.moodle_alb.arn
+    load_balancer_arn = aws_lb.moodle.arn
     port = var.server_port
     protocol = "HTTP"
     # By default, return simple 404 page
@@ -96,8 +104,8 @@ resource "aws_lb_listener" "http" {
 }
 
 # Target Group for the ASG
-resource "aws_lb_target_group" "moodle_tg" {
-    name     = "moodle-target-group"
+resource "aws_lb_target_group" "moodle" {
+    name     = "moodle"
     port     = var.server_port
     protocol = "HTTP"
     vpc_id   = data.aws_vpc.default.id
@@ -113,9 +121,23 @@ resource "aws_lb_target_group" "moodle_tg" {
     }
 }
 
+resource "aws_lb_listener_rule" "moodle" {
+    listener_arn = aws_lb_listener.http.arn
+    priority      = 100
+    condition {
+        path_pattern {
+            values = ["*"]
+        }
+    }
+    action {
+        type = "forward"
+        target_group_arn = aws_lb_target_group.moodle.arn
+    }
+}
+
 # Security Group for the Load Balancer
-resource "aws_security_group" "alb" {
-    name        = "moodle-alb-sg"
+resource "aws_security_group" "moodle" {
+    name        = "moodle"
     # "Allow inbound HTTP requests"
     ingress {
         from_port   = var.server_port
@@ -132,22 +154,9 @@ resource "aws_security_group" "alb" {
     }
 }
 
-
-resource "aws_lb_listener_rule" "moodle_rule" {
-    listener_arn = aws_lb_listener.http.arn
-    priority      = 100
-    condition {
-        path_pattern {
-            values = ["*"]
-        }
-    }
-    action {
-        type = "forward"
-        target_group_arn = aws_lb_target_group.moodle_tg.arn
-    }
-}
-
+# Output the DNS name of the load balancer
+# This can be used to access the application via the load balancer
 output "alb_dns_name" {
-    value       = aws_lb.moodle_alb.dns_name
+    value       = aws_lb.moodle.dns_name
     description = "The domain name of the load balancer"
 }

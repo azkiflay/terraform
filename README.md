@@ -608,7 +608,44 @@ Consequently, on *terraform plan*, Terraform dowloads the **terraform.state** fr
 
 Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Servive (S3)** as a remote backend. Every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing **terraform.state** versions. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
+## Configuring Amazon S3 Remote Store
+To configure Terraform to use a remote backend, you will need to make configuration changes locally. But before you do that, you need to create an S3 bucket that will be used as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console. Note that you cannot have "_" in the name as that is invalid character for an S3 bucket name.
 
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_state_4.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_state_5.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 11: </strong> Terraform state </figcaption>
+</figure>
+
+* Create the following resources in **main.tf** within a **backend** subdirectory.
+```bash
+  terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+
+  backend "s3" {
+    # This backend configuration is filled in automatically at test time by Terratest. If you wish to run this example
+    # manually, uncomment and fill in the config below.
+    bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
+    key            = "global/s3/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "moodle_terraform_locks"
+    encrypt        = true
+  }
+}
+```
 
 
 

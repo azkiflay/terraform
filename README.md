@@ -475,15 +475,15 @@ Fifthly, create a security group for the load balancer using "*aws_security_grou
   }
 ``` 
 
-Sixthly, add the following to the original "*aws_autoscaling_group*" to connect it with the load balancer.
+Sixthly, add the following to the original "*aws_autoscaling_group*" resource to connect it with the load balancer.
 ```bash
-  resource "aws_autoscaling_group" "moodle_asg" {
+  resource "aws_autoscaling_group" "moodle" {
     ...
     target_group_arns = [aws_lb_target_group.moodle.arn]
     health_check_type = "ELB" 
   }
 ```
-Finally, you want to know the IP address or domain name of the load balancer so that your web server can be accessed with that. To that end, add the following output using "*alb_dns_name*" as shown below.
+Finally, you want to know the IP address or domain name of the load balancer so that your web server can be accessed with it. To that end, add the following output using "*alb_dns_name*" resource.
 ```bash
   output "alb_dns_name" {
     value       = aws_lb.moodle.dns_name

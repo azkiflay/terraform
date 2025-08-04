@@ -518,20 +518,6 @@ The implication is that all the five EC2 instances in the cluster can be accesse
 
 Note that the EC2 instances in the cluster are checked regularly for their health status. Therefore, if one of the instances is overloaded with too many user requests, the load balancer identifies less busy instances and redirects traffic to them. Notably, if any of the instances fails for some reason, a new one will be created to replace it because the ASG works to maintain the desired number of instances as defined in the configuration file. This can be confirmed by selecting and terminating one of the EC2 instances on AWS.
 
-<figure>
-<table>
-  <tr>
-    <td>
-      <img src="figures/terraform_alb_3.png"/> <!-- width="400" height="200"/> --> <br>
-    </td>
-    <td>
-      <img src="figures/terraform_alb_4.png"/> <!-- width="400" height="200"/> --> <br>
-    </td>
-  </tr>
-</table>
-<figcaption><strong>Figure 9: </strong> Self-healing in the Elastic Load Balancer (ELB) </figcaption>
-</figure>
-
 As shown in Figure 9, when one instance of the ASG was terminated, a new one started to be created automatically. When you refresh your browser after deleting one of the ASG instances, you will see a new one being created almost instantly. The one that has *Initializing* on the Status Check column is a new being created to replace the one that was terminated manually. The reason for termination can be something else, however as long as Terraform has been configured to keep a specific number of instances in the ASG, it will automatically create new instance if there are less number of EC2 instances than required.
 
 <figure>
@@ -545,7 +531,7 @@ As shown in Figure 9, when one instance of the ASG was terminated, a new one sta
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 8: </strong> Automatic replacement of unhealthy instance </figcaption>
+<figcaption><strong>Figure 9: </strong> Automatic replacement of unhealthy instance in the ASG </figcaption>
 </figure>
 
 Finally, when the life cycle of the infrastructe comes to an end, you can delete it as follows. You must be careful with this one because there is now way to recover your infrastructure if you destroyed it in this way. Therefore, you must be certain that you do NOT need any of the resources in the project whose infrastructure is to be deleted. However, Terraform being an IaC tool, as long as you have your Terraform file, you can create the same infrastructure again by running "*terraform apply*".

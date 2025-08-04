@@ -559,25 +559,6 @@ Figure 10 shows Terraform's message on the local machine, stating that *8* resou
 </figure>
 
 
-# Terraform and Configuration Management
-Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
-## On lauch setup using shell scripts
-On launch, Terraform can be configured to create and instantiate infrastructed by running a shell script.
-
-```bash
-    provider "aws" {
-        region = "us-east-1"
-    }
-       
-
-    tags = { 
-        Name = "moodle-instance"
-        } 
-    }
-```
-
-The shell script that is specified within the "*user_data*" parameter runs at launch of the instance. Similarly, software can be installed, services configured and started. Shorter scripts can be inserted using "*<<- EOF ... EOF*" as shown above. However, for long shell scripts, it is better to save them as separate files and load them to Terraform using the **file()** function.
-
 # Terraform State
 This section discusses how Terraform knows existing infrastructure when "*terraform apply*" is run. When you add to or change an existing infrastructure, Terraform does not create resoruces from scracth. It detects the already present resources, only adding or modifying them according to the new configuration. In other words, it calculates the difference between the existing configuration and the new one. An important question to ask here is that how does Terraform know the current configuration when the configuration file has been changed? The answer is it maintains a separate **state file**.
 
@@ -626,6 +607,33 @@ To address this challenges, Terraform has a built-in support for **remote backen
 Consequently, on *terraform plan*, Terraform dowloads the **terraform.state** from the remote backend, and uploads the state file to the remote backend at the end of every *terraform apply*. As stated earlier, only one Terraform process has the lock, so there will not be any race conditions between *terraform apply* from multiple team members. Moreover, remote backends encrypt **terraform.state** file in transit and at rest, keeping secrets of the Terraform resources secure. Effectively, the **terraform.state** file is kept always encrypted.
 
 Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Servive (S3)** as a remote backend. 
+
+
+
+
+
+
+
+
+
+# Terraform and Configuration Management
+Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
+## On lauch setup using shell scripts
+On launch, Terraform can be configured to create and instantiate infrastructed by running a shell script.
+
+```bash
+    provider "aws" {
+        region = "us-east-1"
+    }
+       
+
+    tags = { 
+        Name = "moodle-instance"
+        } 
+    }
+```
+
+The shell script that is specified within the "*user_data*" parameter runs at launch of the instance. Similarly, software can be installed, services configured and started. Shorter scripts can be inserted using "*<<- EOF ... EOF*" as shown above. However, for long shell scripts, it is better to save them as separate files and load them to Terraform using the **file()** function.
 
 ## Ansible with Terraform
 

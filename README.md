@@ -632,26 +632,12 @@ aws s3api create-bucket \
   --region us-east-1
 ```
 
-Subsequently, to configure Terraform so that it saves the **terraform.state** on the remote S3 store, you need to add to your Terraform file so that it uses the bucket you created. To that end, create the following resources in **main.tf** within a **backend** subdirectory. You can see that the bucket create above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Due to this, Terraform will not store its **terraform.state** locally, instead it will be uploading to and downloading from the S3 bucket.
+What you want to happen next for the local **terraform.state** to be a starting point on the remote backend. Before the remote backend is configured, run **terraform init** on your local machine.
 ```bash
-    terraform {
-    required_providers {
-      aws = {
-        source  = "hashicorp/aws"
-        version = "~> 6.0"
-      }
-    }
-    backend "s3" {
-      bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
-      key            = "global/s3/terraform.tfstate"
-      region         = "us-east-1"
-      dynamodb_table = "azkiflay-moodle-terraform-locks"
-      encrypt        = true
-    }
-  }
+  terraform init
 ```
+Then, to change move the state file from the local host to the remote backend (the S3 bucket created earlier), create the following resources. Note that the *bucket = "azkiflay-moodle-terraform-state"* refers to the S3 bucket already created on AWS. If you not, you need to create it using as discussed above.
 
-Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the regon where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
 ```bash
   provider "aws" {
     region = "us-east-1"
@@ -700,34 +686,32 @@ Note that other configuration changes are also made. These include the locking m
   }
 ```
 
+Subsequently, to configure Terraform so that it saves the **terraform.state** on the remote S3 store, you need to add to your Terraform file so that it uses the bucket you created. To that end, create the following resources in **main.tf** within a **backend** subdirectory. You can see that the bucket create above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Due to this, Terraform will not store its **terraform.state** locally, instead it will be uploading to and downloading from the S3 bucket.
+```bash
+    terraform {
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~> 6.0"
+      }
+    }
+    backend "s3" {
+      bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
+      key            = "global/s3/terraform.tfstate"
+      region         = "us-east-1"
+      dynamodb_table = "azkiflay-moodle-terraform-locks"
+      encrypt        = true
+    }
+  }
+```
+
+Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the regon where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
+
 Finally, you need to run Terraform to apply the changes and use the S3 store as its backend, using *terraform init*.
 ```bash
   terraform init
 ```
-
-
-Thirdly, 
-* 
-```bash
-  terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
-    }
-  }
-
-  backend "s3" {
-    # This backend configuration is filled in automatically at test time by Terratest. If you wish to run this example
-    # manually, uncomment and fill in the config below.
-    bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
-    key            = "global/s3/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "moodle_terraform_locks"
-    encrypt        = true
-  }
-}
-```
+As you can see in Figure 14, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrputing the **terraform.state** file, race conditions, and without secrets being accidentaly exposed accidentally.
 
 
 

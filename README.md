@@ -607,12 +607,19 @@ For example, Figure 11 displays the first few lines of *terraform.state* using "
 Note that the *terraform.state* file is automatically generated when *terraform apply* is issued to create the infrastructure. Moreover, the file is not supposed to be edited manually. It is only there for Terraform to keep an internal record about the deployed infrastrucute, and to use the state file as a reference when configuration changes are made.
 
 ## Terraform State and Team Working
-While keeping a local copy of the **terraform.state** file is fine for an individual-based work, it is not suitable for team-based working. In the latter, team members can be adding and removing resources using Terraform. In that case, there is a coordination challenge if members of the team are keeping the sate file locally. For example, if a team member issued **terraform destroy** on their local host, their **terraform.state** file would look as follows:
+While keeping a local copy of the **terraform.state** file is fine for an individual-based work, it is not suitable for team-based working. In the latter, team members can be adding and removing resources using Terraform. In that case, there is a coordination challenge if members of the team are keeping the sate file locally. For example, if a team member issued **terraform destroy** on their local host, their **terraform.state** file would look as follows.
 
 <p align="center">
   <img src="figures/terraform_state_3.png"/> <!-- width="500" height="250"/> -->
 </p>
 <p align="center"><strong>Figure 12:</strong> Local Terraform state </p>
+
+As indicated by **"resources": []** in Figure 12, it can be seen that there are no resources according to the **terraform.state** file in the local host that belong to the team member who issued the **terraform destroy**. But how can other team members know about the fact that all resources have been destroyed now? Surely, they would have known if they had access to the latest **terraform.state**. The problem arose because of the fact that each team member is working on a local **terraform.state** file. To solve this problem, the team can work using a centralized copy of **terraform.state**.
+
+Working using a centralized **terraform.state** enables team members to know the latest state of the infrastructure before the make changes to it. However, when working using a shared **terraform.state**, there is a need to avoid a race condition in situations where multiple team members try to make changes. The possibility for a race condition is solved using locking mechanism. When a team member is making changes to the **terraform.state**, the file is locked from access by others. Other team members make their changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform process to apply changes to infrastructure, avoiding file access conflcts, data loss, and corruption of the state of the infrastructure.
+
+## Terraform State Store
+While Version Control Systems (VCS) such as Git are great for storing your Terraform code, VCSes are not good for storing **terraform.state** file. Because VCSes do not provide locking mechanism, which is critical for **terraform.state**. Moreover, **secrets** used in Terraform **resources** are stored in plain text. Therefore, storing **terraform.state** in VCSes such as Git would expose secrets, compromising the security of and access to your infrastructure.
 
 ## Ansible with Terraform
 

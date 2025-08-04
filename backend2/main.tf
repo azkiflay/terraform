@@ -21,7 +21,7 @@ provider "aws" {
     region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "moodle_terraform_state" {
+resource "aws_s3_bucket" "azkiflay-moodle-terraform-state" {
   bucket = "azkiflay-moodle-terraform-state" # Must be globally unique
   // This is only here so we can destroy the bucket as part of automated tests. You should not copy this for production
   // usage
@@ -29,7 +29,7 @@ resource "aws_s3_bucket" "moodle_terraform_state" {
 }
 # Enable versioning so you can see the full revision history of your state files
 resource "aws_s3_bucket_versioning" "enabled" {
-  bucket = aws_s3_bucket.moodle_terraform_state.id
+  bucket = aws_s3_bucket.azkiflay-moodle-terraform-state.id
   versioning_configuration {
     status = "Enabled"
   }
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket = aws_s3_bucket.moodle_terraform_state.id
+  bucket = aws_s3_bucket.azkiflay-moodle-terraform-state.id
   block_public_acls       = true
   ignore_public_acls      = true
   block_public_policy     = true

@@ -534,11 +534,15 @@ As shown in Figure 9, when one instance of the ASG was terminated, a new one sta
 <figcaption><strong>Figure 9: </strong> Automatic replacement of unhealthy instance in the ASG </figcaption>
 </figure>
 
-Finally, when the life cycle of the infrastructe comes to an end, you can delete it as follows. You must be careful with this one because there is now way to recover your infrastructure if you destroyed it in this way. Therefore, you must be certain that you do NOT need any of the resources in the project whose infrastructure is to be deleted. However, Terraform being an IaC tool, as long as you have your Terraform file, you can create the same infrastructure again by running "*terraform apply*".
+Finally, when the life cycle of the infrastructe comes to an end, you can delete it as shown below. 
 ```bash
   terraform destroy
 ```
-The *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, basically ideintifying the right order to delete resources.Figure 9 shows Terraform's message on the local machine, stating that *8* resources were destroyed. In addition, Figure 9 shows that the EC2 instances being deleted on AWS. On refresh, the instances are indeed terminated for good.
+However, you must be careful when deleting because there is no way to recover your infrastructure if you destroyed it in this way. Therefore, you must be certain that you do NOT need any of the resources in the project whose infrastructure is to be deleted. In any case, since Terraform is an IaC tool, you can re-create the same infrastructure again by running "*terraform apply*" as long as you have your Terraform file.
+
+Note that the *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, ideintifying the right order to delete resources. 
+
+Figure 10 shows Terraform's message on the local machine, stating that *8* resources were destroyed. In addition, Figure 10 displays the EC2 instances that are being deleted on AWS. On refresh, the instances were indeed terminated for good.
 
 <figure>
 <table>
@@ -551,7 +555,7 @@ The *destroy* operation takes somewhat longer time because Terraform need to wor
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 9: </strong> Destroying the EC2 instances </figcaption>
+<figcaption><strong>Figure 10: </strong> Destroying EC2 instances in the ASG </figcaption>
 </figure>
 
 

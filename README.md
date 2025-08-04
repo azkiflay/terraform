@@ -604,6 +604,7 @@ For example, Figure 11 displays the first few lines of *terraform.state* using "
 <figcaption><strong>Figure 11: </strong> Terraform state </figcaption>
 </figure>
 
+Note that the *terraform.state* file is automatically generated when *terraform apply* is issued to create the infrastructure. Moreover, the file is not supposed to be edited manually. It is only there for Terraform to keep an internal record about the deployed infrastrucute, and to use the state file as a reference when configuration changes are made.
 
 ## Ansible with Terraform
 

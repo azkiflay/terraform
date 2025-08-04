@@ -384,7 +384,7 @@ For a web server, you can deploy ALB as the load balancer. ALB is made up of thr
 
 To create a load balancer, you need to create the ALB-related resources, namely *listener*, *listener rule*, and *target group*. Moreover, you need to create a *security group* to allow traffic to the load balancer since the default rule is to block all incoming and outgoing traffic.
 
-Therefore, to create a load balancer in your infrastructure, first you need to create the ALB using the using the "*aws_lb*" as shown in the following.
+Therefore, to create a load balancer in your infrastructure, first you need to create the ALB using the using the "*aws_lb*" resource as shown in the following.
 ```bash
   resource "aws_lb" "moodle" {
     name = "moodle-lb"
@@ -395,7 +395,7 @@ Therefore, to create a load balancer in your infrastructure, first you need to c
 }
 ```
 
-Secondly, add a "*aws_lb_listener*" for HTTP traffic as shown below, configuring the "*aws_lb*" to listen on port 80 among other settings.
+Secondly, add a "*aws_lb_listener*" resource for HTTP traffic as shown below, configuring the "*aws_lb*" to listen on port 80 among other settings.
 ```bash
     resource "aws_lb_listener" "http" {
       load_balancer_arn = aws_lb.moodle.arn
@@ -412,7 +412,28 @@ Secondly, add a "*aws_lb_listener*" for HTTP traffic as shown below, configuring
     }
 ```
 
-Thirdly, create the *target group* using "*aws_lb_target_group*" as follows. To get latest data on each EC2 instance, the target group probes the instances by sending HTTP requests periodically. 
+Thirdly, create as "*aws_lb_listener_rule*" resource to determine where to direct requests, as shown below.
+```bash
+  resource "aws_lb_listener_rule" "moodle" {
+    listener_arn = aws_lb_listener.http.arn
+    priority      = 100
+    action {
+        type = "forward"
+        forward {
+            target_group {
+                arn = aws_lb_target_group.moodle.arn
+            }
+        }
+    }
+    condition {
+        path_pattern {
+            values = ["*"]
+        }
+    }
+  }
+```
+
+Fourthly, create the *target group* resource using "*aws_lb_target_group*" as follows. To get the latest data on each EC2 instance, the target group probes the instances by sending HTTP requests periodically. 
 ```bash
   resource "aws_lb_target_group" "moodle" {
     name = "moodle-lb-tg"
@@ -432,52 +453,35 @@ Thirdly, create the *target group* using "*aws_lb_target_group*" as follows. To 
   } 
 ```
 
-Fourthly, create a security group for the load balancer using "*aws_security_group*" as shown below, which allows incoming requests on port 80. Moreover, all outgoing requests should be allowed to be able to send health check requests to the EC2 instances, by setting "*from_port*", "*to_port*", and "*protocol*" to 0, 0, and -1, respectively. 
+Fifthly, create a security group for the load balancer using "*aws_security_group*" resource as shown below, which allows requests on port 80. Moreover, all outgoing requests should be allowed to be able to send health check requests to the EC2 instances, by setting "*from_port*", "*to_port*", and "*protocol*" to 0, 0, and -1, respectively.
 ```bash
-  # Security Group for the Load Balancer
-  resource "aws_security_group" "alb" {
-      name        = "moodle-alb-sg"
-      # "Allow inbound HTTP requests"
-      ingress {
-          from_port   = 80
-          to_port     = 80
-          protocol    = "tcp"
-          cidr_blocks = ["0.0.0.0/0"]
-      }
-      # Allow all outbound requests
-      egress {
-          from_port   = 0
-          to_port     = 0
-          protocol    = "-1"
-          cidr_blocks = ["0.0.0.0/0"]
-      }
+  resource "aws_security_group" "moodle_lb_sg" {
+    name        = "moodle"
+    description = "Security group for the Moodle load balancer"
+    # "Allow inbound HTTP requests"
+    ingress {
+        from_port   = var.server_port
+        to_port     = var.server_port
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    # Allow all outbound requests
+    egress {
+        from_port   = 0
+        to_port     = 0 
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 ``` 
 
-Fifthly, create a listener rule using "*aws_lb_listener_rule*" as shown below.
-```bash
-  resource "aws_lb_listener_rule" "asg" {
-    listener_arn = aws_lb_listener.http.arn # <--- resource "aws_lb_listener" "http"
-    priority      = 100
-    condition {
-        path_pattern {
-            values = ["*"]
-        }
-    }
-    action {
-        type = "forward"
-        target_group_arn = aws_lb_target_group.asg.arn
-    }
-}
-```
-
-Sixthly, add the following to the original ASG ("resource "aws_autoscaling_group" "moodle_asg") to connect it with the load balancer.
+Sixthly, add the following to the original "*aws_autoscaling_group*" to connect it with the load balancer.
 ```bash
   resource "aws_autoscaling_group" "moodle_asg" {
     ...
-    target_group_arns = [aws_lb_target_group.asg.arn] 
-    health_check_type = "ELB" # health_check_type    = "EC2" # "EC2" --> only minimum health check (i.e. up or down?)
-}
+    target_group_arns = [aws_lb_target_group.moodle.arn]
+    health_check_type = "ELB" 
+  }
 ```
 Finally, you want to know the IP address or domain name of the load balancer so that your web server can be accessed with that. To that end, add the following output using "*alb_dns_name*" as shown below.
 ```bash

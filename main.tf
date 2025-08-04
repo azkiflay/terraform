@@ -93,9 +93,7 @@ EOF
 resource "aws_autoscaling_group" "moodle" {
     min_size             = 3
     max_size             = 10
-    # desired_capacity     = 5
     vpc_zone_identifier  =  data.aws_subnets.default.ids
-    # availability_zones = data.aws_availability_zones.available.names
     target_group_arns = [aws_lb_target_group.moodle.arn]  # Which EC2 instance to send requests to
     health_check_type = "ELB"  
     health_check_grace_period = 300  
@@ -149,7 +147,6 @@ resource "aws_lb_listener_rule" "moodle" {
             values = ["*"]
         }
     }
-    
 }
 
 resource "aws_lb_target_group" "moodle" {
@@ -172,7 +169,6 @@ resource "aws_lb_target_group" "moodle" {
 
 resource "aws_security_group" "moodle_lb_sg" {
     name        = "moodle"
-    # vpc_id      = data.aws_vpc.default.id
     description = "Security group for the Moodle load balancer"
     # "Allow inbound HTTP requests"
     ingress {

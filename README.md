@@ -269,15 +269,15 @@ To create an ASG, you need to remove the *resource "aws_instance" "moodle"*. Bec
 
 Based on the *aws_launch_template*, the ASG can be created as follows. Note that 
 ```bash
-  resource "aws_autoscaling_group" "moodle_asg" {
+  resource "aws_autoscaling_group" "moodle" {
         launch_template {
             id      = aws_launch_template.moodle.id
             version = "$Latest"
       }
-        min_size             = 3 # Minimum number of instances in the ASG
+        min_size             = 5 # Minimum number of instances in the ASG
         max_size             = 10 # Maximum number of instances in the ASG
         desired_capacity     = 5 # Desired number of instances in the ASG
-        vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips <-- dynamic list of subnet IDs
+        vpc_zone_identifier  =  data.aws_subnets.default.ids
   }
 ```
 
@@ -343,12 +343,12 @@ Five instances were created because the *"aws_autoscaling_group"* was created wi
 ## Destroying ASG
 Change values of *min_size*, *max_size*, and *desired_capacity* to *0* and apply the configuration to see what happens. 
 ```bash
-  resource "aws_autoscaling_group" "moodle_asg" {
+  resource "aws_autoscaling_group" "moodle" {
         ...
         min_size             = 0 # Minimum number of instances in the ASG
         max_size             = 0 # Maximum number of instances in the ASG
         desired_capacity     = 0 # Desired number of instances in the ASG
-        vpc_zone_identifier  =  data.aws_subnets.default.ids # data.aws_instance.moodle_asg.public_ips <-- dynamic list of subnet IDs
+        vpc_zone_identifier  =  data.aws_subnets.default.ids
   }
 ```
 
@@ -512,11 +512,11 @@ If you everything went according to the above steps, you should be able to somet
 <figcaption><strong>Figure 8: </strong> Elastic Load Balancer (ELB) </figcaption>
 </figure>
 
-Eight resources were added as shown by Terraform's message. As can been from the AWS Instnace list, **five** EC2 instances were created based on the configurations discussed earlier. Additionally, Terraform displayed the domain name of the load balancer as an output, namely, **alb_dns_name = "moodle-alb-1322738834.us-east-1.elb.amazonaws.com"**, which can be seen in Figure 8. 
+Eight resources were added as shown by Terraform's message. As can been from the AWS Instnace list, **five** EC2 instances were created based on the configurations discussed earlier. Additionally, Terraform displayed the domain name of the load balancer as an output, namely, **alb_dns_name = "moodle-alb-1322738834.us-east-1.elb.amazonaws.com"** as can be seen in Figure 8. 
 
-The implication is that all the five EC2 instances in the cluster can be accessed using the single domain name. You can put the domain name of the load balancer (**moodle-alb-1322738834.us-east-1.elb.amazonaws.com**) on your browser to test the web server. You should be able to get a "Hello, World" message. Note that the **vpc_zone_identifier** is set to **data.aws_subnets.public.ids** to make sure the load balancer is accessible on a public IP address.
+The implication is that all the five EC2 instances in the cluster can be accessed using the single domain name. You can put the domain name of the load balancer (**moodle-alb-1322738834.us-east-1.elb.amazonaws.com**) on your browser to test the web server. You should be able to get a "Hello, World" message.
 
-Note that the health of the EC2 instances in the cluster is checker regularly. Therefore, if one of the instance is overloaded with too many user requests, the load balancer identifies less busy instances and redirects traffic to them. Notably, i any of the instances fails for some reason, a new one will be created to replace it because the ASG works to maintain the desired number of instances as defined in the configuration file. This can be confirmed by selecting and terminating one of the EC2 instances on AWS.
+Note that the health of the EC2 instances in the cluster is checked regularly. Therefore, if one of the instance is overloaded with too many user requests, the load balancer identifies less busy instances and redirects traffic to them. Notably, i any of the instances fails for some reason, a new one will be created to replace it because the ASG works to maintain the desired number of instances as defined in the configuration file. This can be confirmed by selecting and terminating one of the EC2 instances on AWS.
 
 As shown in Figure 9, when one instance of the ASG was terminated, a new one started to be created automatically. When you refresh your browser after deleting one of the ASG instances, you will see a new one being created almost instantly. The one that has *Initializing* on the Status Check column is a new being created to replace the one that was terminated manually. The reason for termination can be something else, however as long as Terraform has been configured to keep a specific number of instances in the ASG, it will automatically create one if there are less number of EC2 instances than required.
 

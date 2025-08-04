@@ -114,23 +114,15 @@ resource "aws_autoscaling_group" "moodle" {
 resource "aws_lb" "moodle" {
     name = "moodle-lb"
     load_balancer_type = "application"
-    internal           = false                     # This makes it public-facing
-    subnets = data.aws_subnets.default.ids # data.aws_subnets.public.ids # Load balancer uses all public subnets
-    security_groups = [aws_security_group.moodle_lb_sg.id] # Security group for the load balancer
+    internal           = false
+    subnets = data.aws_subnets.default.ids
+    security_groups = [aws_security_group.moodle_lb_sg.id]
 }
 
 resource "aws_lb_listener" "http" {
     load_balancer_arn = aws_lb.moodle.arn
     port = var.server_port
     protocol = "HTTP"
-    /*
-    default_action {
-        type             = "forward"
-        target_group_arn = aws_lb_target_group.moodle.arn
-    }
-    */
-
-    # By default, return simple 404 page
     default_action {
         type = "fixed-response"
         fixed_response {
@@ -138,24 +130,6 @@ resource "aws_lb_listener" "http" {
             message_body = "404: page not found."
             status_code = 404
         }
-    }
-}
-
-
-resource "aws_lb_target_group" "moodle" {
-    name = "moodle-lb-tg"
-    port     = var.server_port
-    protocol = "HTTP"
-    vpc_id   = data.aws_vpc.default.id
-    health_check {
-        path                = "/"
-        protocol            = "HTTP"
-        matcher =           "200"
-        interval            = 15
-        timeout             = 3
-        healthy_threshold   = 2
-        unhealthy_threshold = 2
-
     }
 }
 
@@ -177,6 +151,24 @@ resource "aws_lb_listener_rule" "moodle" {
     }
     
 }
+
+resource "aws_lb_target_group" "moodle" {
+    name = "moodle-lb-tg"
+    port     = var.server_port
+    protocol = "HTTP"
+    vpc_id   = data.aws_vpc.default.id
+    health_check {
+        path                = "/"
+        protocol            = "HTTP"
+        matcher =           "200"
+        interval            = 15
+        timeout             = 3
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+
+    }
+}
+
 
 resource "aws_security_group" "moodle_lb_sg" {
     name        = "moodle"

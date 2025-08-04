@@ -382,27 +382,25 @@ Common types of ELB's include the following:
 
 For a web server, you can deploy ALB as the load balancer. ALB is made up of three components, namely, *Listener*, *Listener Rules*, and *Target Groups*. While a *Listener* specifies which port to listen on for requests, a *Listener Rule* decides where among *Target Groups*, and where exactly within each one of them, a request should be sent to. Finally, a *Target Group* refers to a group of servers that processes requests received from the load balancer. Moreover, server health checks are performed for each *Target Group* so that requests are sent only to those that can handle them.
 
-To create a load balancer, you need to create the ALB-related resources, namely *listener*, *listener rule*, and *target group*. Moreover, you need to create a *security group* to allow traffic to the load balancer since its default rule is to block all incoming and outgoing traffic.
+To create a load balancer, you need to create the ALB-related resources, namely *listener*, *listener rule*, and *target group*. Moreover, you need to create a *security group* to allow traffic to the load balancer since the default rule is to block all incoming and outgoing traffic.
 
 Therefore, to create a load balancer in your infrastructure, first you need to create the ALB using the using the "*aws_lb*" as shown in the following.
 ```bash
-  # Create an Application Load Balancer (ALB) for the ASG instances
   resource "aws_lb" "moodle" {
-      name = "moodle-alb"
-      load_balancer_type = "application"
-      subnets = data.aws_subnets.default.ids # Load balancer uses all subnets
-      security_groups = [aws_security_group.alb.id] # Security group for the load balancer
-  }
+    name = "moodle-lb"
+    load_balancer_type = "application"
+    internal           = false
+    subnets = data.aws_subnets.default.ids
+    security_groups = [aws_security_group.moodle_lb_sg.id]
+}
 ```
 
 Secondly, add a "*aws_lb_listener*" for HTTP traffic as shown below, configuring the "*aws_lb*" to listen on port 80 among other settings.
 ```bash
-  # Create a Listener for the Load Balancer
-  resource "aws_lb_listener" "http" {
+    resource "aws_lb_listener" "http" {
       load_balancer_arn = aws_lb.moodle.arn
-      port = 80
+      port = var.server_port
       protocol = "HTTP"
-      # By default, return simple 404 page
       default_action {
           type = "fixed-response"
           fixed_response {
@@ -411,31 +409,30 @@ Secondly, add a "*aws_lb_listener*" for HTTP traffic as shown below, configuring
               status_code = 404
           }
       }
-  }
+    }
 ```
 
-Thirdly, create the *target group* using "*aws_lb_target_group*" as follows. To get latest data on each EC2 instance, the target groups probes the instances by sending HTTP requests periodically. 
+Thirdly, create the *target group* using "*aws_lb_target_group*" as follows. To get latest data on each EC2 instance, the target group probes the instances by sending HTTP requests periodically. 
 ```bash
-  # Target Group for the ASG
-  resource "aws_lb_target_group" "asg" {
-      name     = "moodle-target-group"
-      port     = var.server_port
-      protocol = "HTTP"
-      vpc_id   = data.aws_vpc.default.id
-      health_check {
-          path                = "/"
-          protocol            = "HTTP"
-          matcher =           "200"
-          interval            = 15
-          timeout             = 3
-          healthy_threshold   = 2
-          unhealthy_threshold = 2
+  resource "aws_lb_target_group" "moodle" {
+    name = "moodle-lb-tg"
+    port     = var.server_port
+    protocol = "HTTP"
+    vpc_id   = data.aws_vpc.default.id
+    health_check {
+        path                = "/"
+        protocol            = "HTTP"
+        matcher =           "200"
+        interval            = 15
+        timeout             = 3
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
 
-      }
-  }
+    }
+  } 
 ```
 
-Fourthly, create a security group for the load balancer using "*aws_security_group*" as shown below, which allows incoming requests on port 80. Moreover, all outgoing requests should be allowed to be able to send health check requests to the EC2 instances, by setting "*from_port*", "*to_port*", and "*protocol*" to 0, 0, and -1 respectively.
+Fourthly, create a security group for the load balancer using "*aws_security_group*" as shown below, which allows incoming requests on port 80. Moreover, all outgoing requests should be allowed to be able to send health check requests to the EC2 instances, by setting "*from_port*", "*to_port*", and "*protocol*" to 0, 0, and -1, respectively. 
 ```bash
   # Security Group for the Load Balancer
   resource "aws_security_group" "alb" {

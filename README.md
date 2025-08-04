@@ -380,7 +380,7 @@ Common types of ELB's include the following:
 * Application-layer Load Balancer (ALB), which load balances HTTP and HTTPS traffic
 * Network-layer Load Balancer (NLB), which load balances TCP, UDP and TLS traffic.
 
-For a web server, you can deploy ALB as the load balancer. ALB is made up of three components, namely, *Listener*, *Listener Rules*, and *Target Groups*. While a *Listener* specifies which port to listen on for requests, a *Listener Rule* decides where among *Target Groups* a request should be sent to. Finally, a *Target Group* refers to a group of server that process requests received from the load balancer. Moreover, server health checks are performed for each *Target Group* so that requests are sent to those that can handle them.
+For a web server, you can deploy ALB as the load balancer. ALB is made up of three components, namely, *Listener*, *Listener Rules*, and *Target Groups*. While a *Listener* specifies which port to listen on for requests, a *Listener Rule* decides where among *Target Groups*, and where exactly within each one of them, a request should be sent to. Finally, a *Target Group* refers to a group of servers that processes requests received from the load balancer. Moreover, server health checks are performed for each *Target Group* so that requests are sent only to those that can handle them.
 
 To create a load balancer, you need to create the ALB-related resources, namely *listener*, *listener rule*, and *target group*. Moreover, you need to create a *security group* to allow traffic to the load balancer since its default rule is to block all incoming and outgoing traffic.
 

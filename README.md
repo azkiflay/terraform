@@ -606,6 +606,14 @@ For example, Figure 11 displays the first few lines of *terraform.state* using "
 
 Note that the *terraform.state* file is automatically generated when *terraform apply* is issued to create the infrastructure. Moreover, the file is not supposed to be edited manually. It is only there for Terraform to keep an internal record about the deployed infrastrucute, and to use the state file as a reference when configuration changes are made.
 
+## Terraform State and Team Working
+While keeping a local copy of the **terraform.state** file is fine for an individual-based work, it is not suitable for team-based working. In the latter, team members can be adding and removing resources using Terraform. In that case, there is a coordination challenge if members of the team are keeping the sate file locally. For example, if a team member issued **terraform destroy** on their local host, their **terraform.state** file would look as follows:
+
+<p align="center">
+  <img src="figures/terraform_state_3.png"/> <!-- width="500" height="250"/> -->
+</p>
+<p align="center"><strong>Figure 12:</strong> Local Terraform state </p>
+
 ## Ansible with Terraform
 
 ```bash

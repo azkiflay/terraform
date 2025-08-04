@@ -609,7 +609,7 @@ Consequently, on *terraform plan*, Terraform dowloads the **terraform.state** fr
 Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Servive (S3)** as a remote backend. Every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing **terraform.state** versions. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
 ## Configuring Amazon S3 Remote Store
-To configure Terraform to use a remote backend, you will need to make configuration changes locally. But before you do that, you need to create an S3 bucket that will be used as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console. Note that you cannot have "_" in the name as that is invalid character for an S3 bucket name.
+To configure Terraform to use a remote backend, you will need to make configuration changes locally. But before you do that, you need to create an S3 bucket that will be used as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console. Note that you cannot have "_" in the name as that is invalid character for an S3 bucket, and the name must be globally unique across all AWS customers. Therefor, if you do not choose a common name, expect an error stating that file name has been already taken.
 
 <figure>
 <table>
@@ -625,7 +625,89 @@ To configure Terraform to use a remote backend, you will need to make configurat
 <figcaption><strong>Figure 11: </strong> Terraform state </figcaption>
 </figure>
 
-* Create the following resources in **main.tf** within a **backend** subdirectory.
+Alternatively, the S3 bucket can be created using the AWS CLI as shown below.
+```bash
+aws s3api create-bucket \
+  --bucket azkiflay-moodle-terraform-state \
+  --region us-east-1
+```
+
+Subsequently, to configure Terraform so that it saves the **terraform.state** on the remote S3 store, you need to add to your Terraform file so that it uses the bucket you created. To that end, create the following resources in **main.tf** within a **backend** subdirectory. You can see that the bucket create above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Due to this, Terraform will not store its **terraform.state** locally, instead it will be uploading to and downloading from the S3 bucket.
+```bash
+    terraform {
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~> 6.0"
+      }
+    }
+    backend "s3" {
+      bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
+      key            = "global/s3/terraform.tfstate"
+      region         = "us-east-1"
+      dynamodb_table = "azkiflay-moodle-terraform-locks"
+      encrypt        = true
+    }
+  }
+```
+
+Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the regon where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
+```bash
+  provider "aws" {
+    region = "us-east-1"
+  }
+
+  resource "aws_s3_bucket" "azkiflay-moodle-terraform-state" {
+    bucket = "azkiflay-moodle-terraform-state"
+    force_destroy = true
+  }
+
+  resource "aws_s3_bucket_versioning" "enabled" {
+    bucket = aws_s3_bucket.azkiflay-moodle-terraform-state.id
+    versioning_configuration {
+      status = "Enabled"
+    }
+  }
+
+  resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
+    bucket = aws_s3_bucket.moodle_terraform_state.id
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  resource "aws_s3_bucket_public_access_block" "public_access" {
+    bucket = aws_s3_bucket.azkiflay-moodle-terraform-state.id
+    block_public_acls       = true
+    ignore_public_acls      = true
+    block_public_policy     = true
+    restrict_public_buckets = true
+  }
+
+  resource "aws_dynamodb_table" "azkiflay-moodle-terraform-locks" {
+    name         = "azkiflay-moodle-terraform-locks"
+    billing_mode = "PAY_PER_REQUEST"
+    hash_key     = "LockID"
+    attribute {
+      name = "LockID"
+      type = "S"
+    }
+    lifecycle {
+      prevent_destroy = true
+    }
+  }
+```
+
+Finally, you need to run Terraform to apply the changes and use the S3 store as its backend, using *terraform init*.
+```bash
+  terraform init
+```
+
+
+Thirdly, 
+* 
 ```bash
   terraform {
   required_providers {

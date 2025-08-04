@@ -12,13 +12,13 @@ terraform {
     bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
     key            = "global/s3/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "moodle_terraform_locks"
+    dynamodb_table = "azkiflay-moodle-terraform-locks"
     encrypt        = true
   }
 }
 
 provider "aws" {
-    region = "us-east-1"
+  region = "us-east-1"
 }
 
 resource "aws_s3_bucket" "azkiflay-moodle-terraform-state" {
@@ -52,7 +52,7 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   restrict_public_buckets = true
 }
 
-resource "aws_dynamodb_table" "moodle_terraform_locks" {
+resource "aws_dynamodb_table" "azkiflay-moodle-terraform-locks" {
   name         = "azkiflay-moodle-terraform-locks"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
@@ -63,5 +63,4 @@ resource "aws_dynamodb_table" "moodle_terraform_locks" {
   lifecycle {
     prevent_destroy = true
   }
-  
 }

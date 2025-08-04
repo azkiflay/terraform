@@ -595,7 +595,7 @@ While keeping a local copy of the **terraform.state** file is fine for an indivi
 </p>
 <p align="center"><strong>Figure 12:</strong> Local Terraform state </p>
 
-As indicated by ("**resources": []**") in Figure 12, it can be seen that there are no resources according to the **terraform.state** file in the local host that belong to the team member who issued the **terraform destroy**. But how can other team members know about the fact that all resources have been destroyed now? Surely, they would have known if they had access to the latest **terraform.state**. The problem arose because of the fact that each team member is working on a local **terraform.state** file. To solve this problem, the team can work using a centralized copy of **terraform.state**.
+As indicated by ("**resources": []**) in Figure 12, it can be seen that there are no resources according to the **terraform.state** file in the local host that belong to the team member who issued the **terraform destroy**. But how can other team members know about the fact that all resources have been destroyed now? Surely, they would have known if they had access to the latest **terraform.state**. The problem arose because of the fact that each team member is working on a local **terraform.state** file. To solve this problem, the team can work using a centralized copy of **terraform.state**.
 
 Working using a centralized **terraform.state** enables team members to know the latest state of the infrastructure before the make changes to it. However, when working using a shared **terraform.state**, there is a need to avoid a race condition in situations where multiple team members try to make changes. The possibility for a race condition is solved using locking mechanism. When a team member is making changes to the **terraform.state**, the file is locked from access by others. Other team members make their changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform process to apply changes to infrastructure, avoiding file access conflcts, data loss, and corruption of the state of the infrastructure.
 
@@ -606,7 +606,7 @@ To address this challenges, Terraform has a built-in support for **remote backen
 
 Consequently, on *terraform plan*, Terraform dowloads the **terraform.state** from the remote backend, and uploads the state file to the remote backend at the end of every *terraform apply*. As stated earlier, only one Terraform process has the lock, so there will not be any race conditions between *terraform apply* from multiple team members. Moreover, remote backends encrypt **terraform.state** file in transit and at rest, keeping secrets of the Terraform resources secure. Effectively, the **terraform.state** file is kept always encrypted.
 
-Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Servive (S3)** as a remote backend. 
+Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Servive (S3)** as a remote backend. Every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing **terraform.state** versions. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
 
 

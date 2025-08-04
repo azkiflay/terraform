@@ -531,7 +531,7 @@ As shown in Figure 9, when one instance of the ASG was terminated, a new one sta
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 9: </strong> Self-healing (automatic replacement) of unhealthy instance in the ASG </figcaption>
+<figcaption><strong>Figure 9: </strong> Self-healing (automatic replacement) of instances in the ASG </figcaption>
 </figure>
 
 Finally, when the life cycle of the infrastructe comes to an end, you can delete it as shown below. 

@@ -615,7 +615,7 @@ To configure Terraform to use a remote backend, you will need to make configurat
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_state_4.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_4a.png"/> <!-- width="400" height="200"/> --> <br>
     </td>
     <td>
       <img src="figures/terraform_state_5.png"/> <!-- width="400" height="200"/> --> <br>

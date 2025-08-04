@@ -91,7 +91,7 @@ EOF
 }
 
 resource "aws_autoscaling_group" "moodle" {
-    min_size             = 3
+    min_size             = 5
     max_size             = 10
     vpc_zone_identifier  =  data.aws_subnets.default.ids
     target_group_arns = [aws_lb_target_group.moodle.arn]  # Which EC2 instance to send requests to

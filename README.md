@@ -578,6 +578,32 @@ On launch, Terraform can be configured to create and instantiate infrastructed b
 
 The shell script that is specified within the "*user_data*" parameter runs at launch of the instance. Similarly, software can be installed, services configured and started. Shorter scripts can be inserted using "*<<- EOF ... EOF*" as shown above. However, for long shell scripts, it is better to save them as separate files and load them to Terraform using the **file()** function.
 
+# Terraform State
+This section discusses how Terraform knows existing infrastructure when "*terraform apply*" is run. When you add to or change an existing infrastructure, Terraform does not create resoruces from scracth. It detects the already present resources, only adding or modifying them according to the new configuration. In other words, it calculates the difference between the existing configuration and the new one. An important question to ask here is that how does Terraform know the current configuration when the configuration file has been changed? The answer is it maintains a separate **state file**.
+
+Terraform state is a file that records details about the infrastructure created by a Terraform configuration. The file is created for every folder where Terraform is initiated. Accordingly, a "**terraform.state**" is created, containing entries in JSON format that match **resources** to their **real-world representation**.
+
+When *terraform plan* is run, Terraform refers to the state file (**terraform.state**) to calculate what changes it needs to make to fulfill the desired infrastructe state as described in the latest configuration. Therefore, the changes that happen on every *terraform apply* consist of the difference between the current real-world infrastructure deployment (**terraform.state**) and the desired state (the latest **.tf** file).
+
+For example, Figure 11 displays the first few lines of *terraform.state* using "*nano terraform.state*". 
+```bash
+  nano terraform.state
+```
+
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_state_1.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_state_2.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 11: </strong> Terraform state </figcaption>
+</figure>
+
 
 ## Ansible with Terraform
 

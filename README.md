@@ -580,7 +580,9 @@ Figure 10 shows Terraform's message on the local machine, stating that *8* resou
 
 
 # Terraform State
-This section discusses how Terraform knows the infrastructure that is already in place when you run "*terraform plan*", "*terraform apply*" or similar commands. When you change the configuration of an existing infrastructure, Terraform does not create every resource from scratch. It detects currently present infrastructure components, and adds or modifies resources according to the latest configuration. In other words, Terraform calculates the difference between the current and the desired infrastructure state. But how does Terraform know details of the previously provisioned resources at a time when Terraform configuration files change to meet the desired infrastructure state? The answer: It keeps a separate **state file** to track the resources as they existed prior to the changes.
+This section discusses how Terraform knows the infrastructure that is already in place when you run "*terraform plan*", "*terraform apply*" or similar commands. When you change the configuration of an existing infrastructure, Terraform does not create every resource from scratch. It detects currently present infrastructure components, and adds or modifies resources according to the latest configuration. 
+
+In other words, Terraform calculates the difference between the current and the desired infrastructure state. But how does Terraform know details of the previously provisioned resources at a time when Terraform configuration files change to meet the desired infrastructure state? The answer: It keeps a separate **state file** to track the resources as they existed prior to the changes.
 
 **Terraform state** is a file that records details about the infrastructure created by a Terraform configuration. The file is created for every folder where Terraform is initiated. Accordingly, a "**terraform.state**" is created, containing entries in JSON format that match resources to their real-world representation.
 

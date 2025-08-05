@@ -10,11 +10,11 @@
   - [Destroying ASG](#destroying-asg)
   - [Load Balancer](#load-balancer)
 - [Terraform State](#terraform-state)
-  - [Terraform State and Team Working](#terraform-state-and-team-working)
+  - [Local Terraform State](#local-terraform-state)
   - [Remote Backend to Store Terraform State](#remote-backend-to-store-terraform-state)
   - [Configuring Amazon S3 Remote Store](#configuring-amazon-s3-remote-store)
 - [Terraform and Configuration Management](#terraform-and-configuration-management)
-  - [On lauch setup using shell scripts](#on-lauch-setup-using-shell-scripts)
+  - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
   - [Ansible with Terraform](#ansible-with-terraform)
 
 
@@ -609,7 +609,7 @@ For example, Figure 11 displays the first few lines of *terraform.state* file us
 
 When *terraform apply* is issued to create the infrastructure, the *terraform.state* file is generated automatically. Therefore, the state file is not supposed to be edited manually. Because its purpose is only to keep an internal record about the deployed infrastructure resources, and for Terraform to use it as a reference when configuration changes are made in future.
 
-## Terraform State and Team Working
+## Local Terraform State
 While keeping a local copy of the **terraform.state** file is fine for an individual-based work, it is not suitable for team-based working. In the latter, team members utilize Terraform to add and remove resources. In that case, coordination challenges emerge if each member of the team keeps their Terraform sate file on their local machine. For example, if a team member issued **terraform destroy** on their local host, the **terraform.state** file would look like the following.
 
 <p align="center">
@@ -743,7 +743,7 @@ As you can see in Figure 14, Terraform detects a remote backend "**s3**" success
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
-## On lauch setup using shell scripts
+## On launch setup using shell scripts
 On launch, Terraform can be configured to create and instantiate infrastructed by running a shell script.
 
 ```bash

@@ -702,9 +702,9 @@ Having created the S3 bucket and running *terraform init* successfully, the **te
   }
 ```
 
-Next, you need to configure Terraform so that it saves the *terraform.state* on the remote S3 bucket. This is done within the "*terraform*" block within your "*.tf*" file, by providing details about the S3 backend, using the bucket that was created as a store. 
+Then, you need to configure Terraform so that it saves the *terraform.state* on the remote S3 bucket instead of on the local host. This is done within the "*terraform*" block within your "*.tf*" file, by providing details about the S3 backend, using the bucket that was created as a store. 
 
-To that end, create the following AWS resources in **main.tf** within a **backend** subdirectory.
+To that end, create the following AWS resources in **main.tf**, within a **backend** subdirectory in this example. The specifics of the file structure do not matter as long as your configuration files are in your current working directory.
 ```bash
   terraform {
     required_providers {

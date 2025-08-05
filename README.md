@@ -11,7 +11,7 @@
   - [Load Balancer](#load-balancer)
 - [Terraform State](#terraform-state)
   - [Local Terraform State](#local-terraform-state)
-  - [Remote Backend to Store Terraform State](#remote-backend-to-store-terraform-state)
+  - [Centralized Terraform State](#centralized-terraform-state)
   - [Configuring Amazon S3 Remote Store](#configuring-amazon-s3-remote-store)
 - [Terraform and Configuration Management](#terraform-and-configuration-management)
   - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
@@ -623,7 +623,7 @@ Surely, they would have known if they had access to the latest **terraform.state
 
 A centralized *terraform.state* enables team members to know the latest state of the infrastructure before they start making changes to it. However, when working using a shared *terraform.state*, there is a need to avoid a race condition in situations where multiple team members try to make changes at the same time. The possibility for a race condition is solved using a locking mechanism. When a team member is making changes to the *terraform.state*, the file is locked from access by others. Each member of the team can apply configuration changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform processes from making changes to infrastructure, avoiding file access conflicts, data loss, and possible corruption of the state of the infrastructure.
 
-## Remote Backend to Store Terraform State
+## Centralized Terraform State
 While Version Control Systems (VCS) such as Git are great for storing your Terraform code, VCSes are not good for storing *terraform.state* file. Because VCSes do not provide locking mechanism, which is critical for *terraform.state*. Moreover, **secrets** used in Terraform **resources** are stored in plain text. Therefore, storing *terraform.state* in VCSes such as Git would expose secrets, compromising the security of and access to your infrastructure.
 
 To address this challenges, Terraform has a built-in support for **remote backends**. By default, Terraform uses a **local backend**, storing the *terraform.state* file on the disk of a local host. By comparison, a **remote backend** saves the *terraform.state* file in a shared and remote storage. Remote backends enable a secure way to share the *terraform.state* file between team members, enabling collaboration while keeping a consistent infrastructure state. With a remote backend, every change to the infrastructure configuration will be made by referring to the remotely stored *terraform.state*, as well as updating the state file to reflect any configuration changes made. 

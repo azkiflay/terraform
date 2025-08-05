@@ -1,5 +1,3 @@
-# Contents
-- [Contents](#contents)
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Connecting Terraform with an AWS Account](#connecting-terraform-with-an-aws-account)

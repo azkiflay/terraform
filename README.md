@@ -619,18 +619,18 @@ By default, Terraform saves the state file in the current working directory on a
 
 As indicated by ("**resources": []**) in Figure 12, it can be seen that there are no resources according to the *terraform.state* file in the local host that belongs to the individual who issued the "*terraform destroy*". In such a case, there is no way for other team members to know about the fact that all resources have been destroyed. Furthermore, there would be conflicting and corrupted infrastructure state if another member of the team issued *terraform apply* to create new resources, not even knowing another colleague had issued "*terraform destroy*". So, how can members of a team know the correct and latest state of the infrastructure?
 
-Surely, they would have known if they had access to the latest **terraform.state**. However, coordination problems arise when multiple and different *terraform.state* files exist on the local machines of the team members. If they make changes to Terraform configuration, while keeping different state files locally, they will end up with conflicting and corrupted infrastructure state. To solve this problem, the team can work using a centralized copy of **terraform.state**.
+Surely, they would have known if they had access to the latest **terraform.state**. However, coordination problems arise when multiple and different *terraform.state* files exist on the local machines of the team members. If they make changes to Terraform configuration, while keeping different state files locally, they will end up with conflicting and corrupted infrastructure state. To solve this problem, the team can work using a centralized copy of *terraform.state*.
 
-Working using a centralized *terraform.state* enables team members to know the latest state of the infrastructure before they start making changes to it. However, when working using a shared *terraform.state*, there is a need to avoid a race condition in situations where multiple team members try to make changes. The possibility for a race condition is solved using locking mechanism. When a team member is making changes to the *terraform.state*, the file is locked from access by others. Other team members make their changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform process to apply changes to infrastructure, avoiding file access conflicts, data loss, and corruption of the state of the infrastructure.
+A centralized *terraform.state* enables team members to know the latest state of the infrastructure before they start making changes to it. However, when working using a shared *terraform.state*, there is a need to avoid a race condition in situations where multiple team members try to make changes at the same time. The possibility for a race condition is solved using a locking mechanism. When a team member is making changes to the *terraform.state*, the file is locked from access by others. Each member of the team can apply configuration changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform processes from making changes to infrastructure, avoiding file access conflicts, data loss, and possible corruption of the state of the infrastructure.
 
 ## Remote Backend to Store Terraform State
-While Version Control Systems (VCS) such as Git are great for storing your Terraform code, VCSes are not good for storing **terraform.state** file. Because VCSes do not provide locking mechanism, which is critical for **terraform.state**. Moreover, **secrets** used in Terraform **resources** are stored in plain text. Therefore, storing **terraform.state** in VCSes such as Git would expose secrets, compromising the security of and access to your infrastructure.
+While Version Control Systems (VCS) such as Git are great for storing your Terraform code, VCSes are not good for storing *terraform.state* file. Because VCSes do not provide locking mechanism, which is critical for *terraform.state*. Moreover, **secrets** used in Terraform **resources** are stored in plain text. Therefore, storing *terraform.state* in VCSes such as Git would expose secrets, compromising the security of and access to your infrastructure.
 
-To address this challenges, Terraform has a built-in support for **remote backends**. By default, Terraform uses a **local backend**, storing the **terraform.state** file on the disk of a local host. By comparison, a **remote backend** saves the **terraform.state** file in a shared and remote storage. Remote backends enable a secure way to share the **terraform.state** file between team members, enabling collaboration while keeping a consistent infrastructure state. With a remote backend, every change to the infrastructure configuration will be made by referring to the remotely stored **terraform.state**, as well as updating the state file to reflect any configuration changes made. 
+To address this challenges, Terraform has a built-in support for **remote backends**. By default, Terraform uses a **local backend**, storing the *terraform.state* file on the disk of a local host. By comparison, a **remote backend** saves the *terraform.state* file in a shared and remote storage. Remote backends enable a secure way to share the *terraform.state* file between team members, enabling collaboration while keeping a consistent infrastructure state. With a remote backend, every change to the infrastructure configuration will be made by referring to the remotely stored *terraform.state*, as well as updating the state file to reflect any configuration changes made. 
 
-Consequently, on *terraform plan*, Terraform downloads the **terraform.state** from the remote backend, and uploads the state file to the remote backend at the end of every *terraform apply*. As stated earlier, only one Terraform process has the lock, so there will not be any race conditions between *terraform apply* from multiple team members. Moreover, remote backends encrypt **terraform.state** file in transit and at rest, keeping secrets of the Terraform resources secure. Effectively, the **terraform.state** file is kept always encrypted.
+Consequently, on *terraform plan*, Terraform downloads the *terraform.state* from the remote backend, and uploads the state file to the remote backend at the end of every *terraform apply*. As stated earlier, only one Terraform process has the lock, so there will not be any race conditions between *terraform apply* from multiple team members. Moreover, remote backends encrypt *terraform.state* file in transit and at rest, keeping secrets of the Terraform resources secure. Effectively, the *terraform.state* file is kept always encrypted.
 
-Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Servive (S3)** as a remote backend. Every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing **terraform.state** versions. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
+Remote backends supported by Terraform include HashCorp's own Terraform Cloud and Terraform Enterprise, and other vendor-specific solutions. For AWS, Terraform supports **Amazon Simple Storage Service (S3)** as a remote backend. Every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing *terraform.state* versions. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
 ## Configuring Amazon S3 Remote Store
 To configure Terraform to use a remote backend, you will need to make configuration changes locally. But before you do that, you need to create an S3 bucket that will be used as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console. Note that you cannot have "_" in the name as that is invalid character for an S3 bucket, and the name must be globally unique across all AWS customers. Therefor, if you do not choose a common name, expect an error stating that file name has been already taken.
@@ -656,7 +656,7 @@ aws s3api create-bucket \
   --region us-east-1
 ```
 
-What you want to happen next for the local **terraform.state** to be a starting point on the remote backend. Before the remote backend is configured, run **terraform init** on your local machine.
+What you want to happen next for the local *terraform.state* to be a starting point on the remote backend. Before the remote backend is configured, run *terraform init* on your local machine.
 ```bash
   terraform init
 ```
@@ -710,7 +710,7 @@ Then, to change move the state file from the local host to the remote backend (t
   }
 ```
 
-Subsequently, to configure Terraform so that it saves the **terraform.state** on the remote S3 store, you need to add to your Terraform file so that it uses the bucket you created. To that end, create the following resources in **main.tf** within a **backend** subdirectory. You can see that the bucket create above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Due to this, Terraform will not store its **terraform.state** locally, instead it will be uploading to and downloading from the S3 bucket.
+Subsequently, to configure Terraform so that it saves the *terraform.state* on the remote S3 store, you need to add to your Terraform file so that it uses the bucket you created. To that end, create the following resources in **main.tf** within a **backend** subdirectory. You can see that the bucket create above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Due to this, Terraform will not store its *terraform.state* locally, instead it will be uploading to and downloading from the S3 bucket.
 ```bash
     terraform {
     required_providers {
@@ -729,13 +729,13 @@ Subsequently, to configure Terraform so that it saves the **terraform.state** on
   }
 ```
 
-Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the regon where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
+Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the region where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
 
 Finally, you need to run Terraform to apply the changes and use the S3 store as its backend, using *terraform init*.
 ```bash
   terraform init
 ```
-As you can see in Figure 14, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrputing the **terraform.state** file, race conditions, and without secrets being accidentaly exposed accidentally.
+As you can see in Figure 14, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrupting the *terraform.state* file, race conditions, and without secrets being accidentally exposed accidentally.
 
 
 
@@ -746,7 +746,7 @@ As you can see in Figure 14, Terraform detects a remote backend "**s3**" success
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
 ## On launch setup using shell scripts
-On launch, Terraform can be configured to create and instantiate infrastructed by running a shell script.
+On launch, Terraform can be configured to create and instantiate infrastructure by running a shell script.
 
 ```bash
     provider "aws" {
@@ -784,6 +784,6 @@ The shell script that is specified within the "*user_data*" parameter runs at la
         } 
     }
 ```
-With the **ansible.cfg** and **hosts** created at the same directory as the Terrform configuration file, the function **file()** is used copy the files to the instance launched by Terraform.
+With the **ansible.cfg** and **hosts** created at the same directory as the Terraform configuration file, the function **file()** is used copy the files to the instance launched by Terraform.
 
-Note that script passed through the *user_data* parameter is run only once during the launch of the instance. To make further changes can be made using SSH-based remote access or preferrably Ansible playbooks. Instead of storing your Ansible configuration files locally, it is a good practice to store them in a securre repository. In this way, while Terraform creates the infrastructure, Ansible automates the configuration.
+Note that script passed through the *user_data* parameter is run only once during the launch of the instance. To make further changes can be made using SSH-based remote access or preferably Ansible playbooks. Instead of storing your Ansible configuration files locally, it is a good practice to store them in a secure repository. In this way, while Terraform creates the infrastructure, Ansible automates the configuration.

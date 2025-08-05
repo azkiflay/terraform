@@ -756,7 +756,7 @@ According to the above configuration, Terraform has been setup in such a way tha
 </p>
 <p align="center"><strong>Figure 16:</strong> Terraform state file on S3 </p>
 
-To confirm if changes you make locally are upload to and reflected in the remote S3 bucket on AWS, add the following to get the domain name of the S3 bucket.
+To confirm if changes that are made locally are uploaded to and reflected in the *terraform.state* file on the S3 bucket, add the following resource that retrieves the domain name of the S3 bucket on AWS.
 ```bash
   output "s3_bucket_domain_name" {
     value       = aws_s3_bucket.terraform_state.bucket_domain_name

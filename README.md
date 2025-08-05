@@ -580,7 +580,7 @@ Figure 10 shows Terraform's message on the local machine, stating that *8* resou
 
 
 # Terraform State
-This section discusses how Terraform knows existing infrastructure when "*terraform apply*" is run. When you change an existing infrastructure, Terraform does not create resoruces from scracth. It detects the already present resources, only adding or modifying them according to the new configuration. In other words, it calculates the difference between the existing configuration and the new one. An important question to ask here is that how does Terraform know the current configuration when the configuration file has been changed? The answer is it maintains a separate **state file**.
+This section discusses how Terraform knows the infrastructure that is already in place when "*terraform apply*" is run. When you change an existing infrastructure, Terraform does not create resoruces from scracth. It detects the already present resources, only adding or modifying them according to the new configuration. In other words, it calculates the difference between the existing configuration and the new one. An important question to ask here is that how does Terraform know the current configuration when the configuration file has been changed? The answer is it maintains a separate **state file**.
 
 Terraform state is a file that records details about the infrastructure created by a Terraform configuration. The file is created for every folder where Terraform is initiated. Accordingly, a "**terraform.state**" is created, containing entries in JSON format that match **resources** to their **real-world representation**.
 

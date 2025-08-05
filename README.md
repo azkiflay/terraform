@@ -767,7 +767,21 @@ Run the "*terraform apply*".
 ```bash
   terraform apply
 ```
+Indeed, a new state file was upload to the S3 bucket following the execution of the above "*terraform apply*" command on a local host. Figure 17 displays the current and old versions of the **terraform.state** file.
 
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_state_10.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_state_11.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
+</figure>
 
 
 

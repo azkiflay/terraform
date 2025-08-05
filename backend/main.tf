@@ -5,7 +5,6 @@ terraform {
       version = "~> 6.0"
     }
   }
-  // /*
   backend "s3" {
     bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
     key            = "backend/s3/terraform.tfstate"
@@ -13,7 +12,6 @@ terraform {
     use_lockfile   = true  # S3 native locking # dynamodb_table is deprecated from Terraform version 1.11.0 or higher.
     encrypt        = true
   }
-  // */
 }
 
 provider "aws" {

@@ -697,9 +697,9 @@ Subsequently, the state file needs to be copied from the local host to the remot
 
 Next, you need to configure Terraform so that it saves the *terraform.state* on the remote S3 bucket. This is done within the "*terraform*" block within your "*.tf*" file, by providing details about the S3 backend, using the bucket that was created as a store. 
 
-To that end, create the following resources in **main.tf** within a **backend** subdirectory. You can see that the bucket created above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Due to this, Terraform will not store its *terraform.state* on the local host, instead it will use *terraform.state* downloading it from the S3 bucket, and uploading the state file to the S3 bucket when any changes occur.
+To that end, create the following AWS resources in **main.tf** within a **backend** subdirectory.
 ```bash
-    terraform {
+  terraform {
     required_providers {
       aws = {
         source  = "hashicorp/aws"
@@ -708,13 +708,14 @@ To that end, create the following resources in **main.tf** within a **backend** 
     }
     backend "s3" {
       bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
-      key            = "global/s3/terraform.tfstate"
+      key            = "backend/s3/terraform.tfstate"
       region         = "us-east-1"
-      dynamodb_table = "azkiflay-moodle-terraform-locks"
+      use_lockfile   = true  # S3 native locking # dynamodb_table is deprecated from Terraform version 1.11.0 or higher.
       encrypt        = true
     }
   }
 ```
+You can see that the bucket created above ("*azkiflay-moodle-terraform-state*") is used in the *aws_s3_bucket* resource. Consequently, Terraform will not store its *terraform.state* on the local host, instead it will use *terraform.state* downloading it from the S3 bucket, and uploading the state file to the S3 bucket when any changes occur.
 
 Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the region where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
 

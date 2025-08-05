@@ -1,5 +1,24 @@
 # Contents
-* [Introduction](#Introduction)
+- [Contents](#contents)
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Connecting Terraform with an AWS Account](#connecting-terraform-with-an-aws-account)
+- [Web Server Deployment](#web-server-deployment)
+- [Terraform Variables](#terraform-variables)
+  - [Input variables](#input-variables)
+  - [Output Variables](#output-variables)
+- [Web Server Cluster](#web-server-cluster)
+  - [Creating ASG](#creating-asg)
+  - [Destroying ASG](#destroying-asg)
+  - [Load Balancer](#load-balancer)
+- [Terraform State](#terraform-state)
+  - [Terraform State and Team Working](#terraform-state-and-team-working)
+  - [Remote Backend to Store Terraform State](#remote-backend-to-store-terraform-state)
+  - [Configuring Amazon S3 Remote Store](#configuring-amazon-s3-remote-store)
+- [Terraform and Configuration Management](#terraform-and-configuration-management)
+  - [On lauch setup using shell scripts](#on-lauch-setup-using-shell-scripts)
+  - [Ansible with Terraform](#ansible-with-terraform)
+
 
 # Introduction
 Server infrastructure used to be deployed and managed manually. However, that is not the case any more because manual system administration is time-consuming, error prone and cannot be scaled up to meet requirements of fast Continuous Cntegration and Continuous Deplayment (CI/CD) software delivery pipelines. Infrastructure as Code (IaC) tools fill this gap.

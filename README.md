@@ -715,7 +715,7 @@ To that end, create the following AWS resources in **main.tf** within a **backen
     }
   }
 ```
-You can see that the bucket created above ("*azkiflay-moodle-terraform-state*") is referenced. Consequently, Terraform will not store its *terraform.state* on the local host, instead it will use *terraform.state* downloading it from the S3 bucket, and uploading the state file to the S3 bucket when any changes occur.
+You can see that the bucket created before (i.e., "*azkiflay-moodle-terraform-state*") is referenced. Consequently, Terraform will not store its *terraform.state* on the local host, instead it will use *terraform.state* downloading it from the S3 bucket, and uploading the state file to the S3 bucket when any changes occur.
 
 Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the region where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
 

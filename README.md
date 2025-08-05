@@ -745,6 +745,8 @@ If you get a message that is similar to what is displayed in Figure 15, you have
 With the backend setup as discussed you can continue to use other Terraform commands as you usual. For example, after adding any AWS resource in your configuration, you can view and apply the changes, using "*terraform plan*", and "*terraform apply*", respectively.
 ```bash
   terraform plan
+```
+```bash
   terraform apply
 ```
 

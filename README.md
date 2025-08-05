@@ -724,7 +724,7 @@ To that end, create the following AWS resources in **main.tf** within your curre
     }
   }
 ```
-You can see that the bucket created before (i.e., "*azkiflay-moodle-terraform-state*") is referenced in the "*terraform {}*" block. Consequently, Terraform will not store its *terraform.state* on the local host any more. Instead, it will upload the *terraform.state* to the S3 bucket after any change take place locally, and download the latest copy of the state file from the S3 bucket before making any changes to infrastructure. The result is a consistent and secure infrastructure state that is managed collaboratively by members of a team.
+You can see that the bucket created before (i.e., "*azkiflay-moodle-terraform-state*") is referenced in the "*terraform {}*" block. As a result, Terraform will not store its *terraform.state* on the local host any more. Instead, it will upload the *terraform.state* file to the S3 bucket after any changes take place locally, and download the latest copy of the state file from the S3 bucket before making any changes to infrastructure configuration. The result is a consistent and secure infrastructure state that is managed collaboratively by members of a team. No more "*terraform apply*" conflicts or state file inconsistency.
 
 In Terraform versions older than *1.11.0*, locking mechanism used to be handled using a *dynamodb_table* AWS resource, which is scheduled to be deprecated in later version. It has been replaced by the "use_lockfile", which can be used as demonstrated above.
 

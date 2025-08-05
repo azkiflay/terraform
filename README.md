@@ -651,6 +651,12 @@ To use an Amazon S3 as a remote backend to store *terraform.state*, you will nee
 
 Note that you cannot have underscore ("_") in the name as that is invalid character for an S3 bucket. Moreover, the bucket name must be globally unique across all AWS customers. Therefore, if you do not choose a unique name, expect an error stating that a file name has been already taken. In such a case, you will need to come up with a name that is unlikely to have been used by other customers.
 
+If the bucket has not been created on AWS yet, you will get an error as shown in Figure 14 below.
+<p align="center">
+  <img src="figures/terraform_state_7.png"/> <!-- width="500" height="250"/> -->
+</p>
+<p align="center"><strong>Figure 14:</strong> Bucket doesn't exist error </p>
+
 Alternatively, the S3 bucket can be created using the [AWS CLI](https://aws.amazon.com/cli/) as shown below.
 ```bash
 aws s3api create-bucket \

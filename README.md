@@ -669,8 +669,7 @@ If the bucket has not been created on AWS yet, you will get an error as shown in
 </p>
 <p align="center"><strong>Figure 14:</strong> Bucket doesn't exist error </p>
 
-
-Subsequently, the state file needs to be copied from the local host to the remote backend (the S3 bucket). In this case, the bucket is "*azkiflay-moodle-terraform-state**, which was created on AWS. To configure a remote S3 backend for Terraform, create the following AWS resources.
+Having created the S3 bucket and running *terraform init* successfully, the **terraform.state** needs to be copied from the local host to the remote backend (the S3 bucket). In this case, the bucket's name is "*azkiflay-moodle-terraform-state*". Subsequently, create the following AWS resources to configure a remote S3 backend for Terraform.
 
 ```bash
   provider "aws" {

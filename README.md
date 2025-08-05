@@ -11,7 +11,7 @@
   - [Load Balancer](#load-balancer)
 - [Terraform State](#terraform-state)
   - [Local Terraform State](#local-terraform-state)
-  - [Centralized Terraform State](#centralized-terraform-state)
+  - [Central Terraform State](#central-terraform-state)
   - [Configuring Amazon S3 Remote Store](#configuring-amazon-s3-remote-store)
 - [Terraform and Configuration Management](#terraform-and-configuration-management)
   - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
@@ -623,10 +623,10 @@ Surely, they would have known if they had access to the latest **terraform.state
 
 A centralized *terraform.state* enables team members to know the latest state of the infrastructure before they start making changes to it. However, when working using a shared *terraform.state*, there is a need to avoid a race condition in situations where multiple team members try to make changes at the same time. The possibility for a race condition is solved using a locking mechanism. When a team member is making changes to the *terraform.state*, the file is locked from access by others. Each member of the team can apply configuration changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform processes from making changes to infrastructure, avoiding file access conflicts, data loss, and possible corruption of the state of the infrastructure.
 
-## Centralized Terraform State
+## Central Terraform State
 To address the challenges of keeping local *terraform.state* files, a centralized system can be used by a team. In many similar situations, one of the best solutions for collaborative working would be to use a Version Control Systems (VCS) such as Git. However, VCSes are not good enough for storing *terraform.state* file.  Although VCSes are great for storing other Terraform configuration files, they do not provide locking mechanism, which is critical for *terraform.state*. Moreover, **secrets** used in Terraform resources are stored in plain text. Therefore, storing *terraform.state* in VCSes such as Git would expose secrets, compromising the security of and access to your infrastructure.
 
-To address this challenges, Terraform has a built-in support for **remote backends**. By default, Terraform uses a **local backend**, storing the *terraform.state* file on the disk of a local host. By comparison, a **remote backend** saves the *terraform.state* file in a shared and remote storage. Remote backends enable a secure way to share the *terraform.state* file between team members, enabling collaboration while keeping a consistent infrastructure state. With a remote backend, every change to the infrastructure configuration will be made by referring to the remotely stored *terraform.state*, as well as updating the state file to reflect any configuration changes made. 
+To address these challenges, Terraform has a built-in support for **remote backends**. By default, Terraform uses a **local backend**, storing the *terraform.state* file on the disk of a local host. By comparison, a remote backend saves the *terraform.state* file in a shared and remote storage. Remote backends enable a secure way to share the *terraform.state* file among team members, enabling collaboration while keeping a consistent infrastructure state. With a remote backend, every change to the infrastructure configuration will be made by referring to the remotely stored *terraform.state*, as well as updating the state file to reflect any configuration changes. 
 
 Consequently, on *terraform plan*, Terraform downloads the *terraform.state* from the remote backend, and uploads the state file to the remote backend at the end of every *terraform apply*. As stated earlier, only one Terraform process has the lock, so there will not be any race conditions between *terraform apply* from multiple team members. Moreover, remote backends encrypt *terraform.state* file in transit and at rest, keeping secrets of the Terraform resources secure. Effectively, the *terraform.state* file is kept always encrypted.
 

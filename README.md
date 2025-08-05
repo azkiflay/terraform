@@ -873,7 +873,7 @@ Having completed the above steps, if you obtain results that look like what is s
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
+<figcaption><strong>Figure 18: </strong> Creating S3 backend with and for Terraform, Part 1 </figcaption>
 </figure>
 
 <figure>
@@ -887,7 +887,7 @@ Having completed the above steps, if you obtain results that look like what is s
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
+<figcaption><strong>Figure 19: </strong> Creating S3 backend with and for Terraform, Part 2 </figcaption>
 </figure>
 
 

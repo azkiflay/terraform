@@ -750,6 +750,23 @@ With the backend setup as discussed you can continue to use other Terraform comm
   terraform apply
 ```
 
+According to the above configuration, Terraform has been setup in such a way that all versions of **terraform.state** are saved on the S3 backend. Figure 16 shows the state file has been created as intended.
+<p align="center">
+  <img src="figures/terraform_state_9.png"/> <!-- width="500" height="250"/> -->
+</p>
+<p align="center"><strong>Figure 16:</strong> Terraform state file on S3 </p>
+
+To confirm if changes you make locally are upload to and reflected in the remote S3 bucket on AWS, add the following to get the domain name of the S3 bucket.
+```bash
+  output "s3_bucket_domain_name" {
+    value       = aws_s3_bucket.terraform_state.bucket_domain_name
+    description = "The domain name of the S3 bucket"
+  }
+``` 
+Run the "*terraform apply*".
+```bash
+  terraform apply
+```
 
 
 

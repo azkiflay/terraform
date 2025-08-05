@@ -1,3 +1,6 @@
+# Contents
+* [Introduction](#Introduction)
+
 # Introduction
 Server infrastructure used to be deployed and managed manually. However, that is not the case any more because manual system administration is time-consuming, error prone and cannot be scaled up to meet requirements of fast Continuous Cntegration and Continuous Deplayment (CI/CD) software delivery pipelines. Infrastructure as Code (IaC) tools fill this gap.
 

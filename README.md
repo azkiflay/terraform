@@ -607,7 +607,7 @@ For example, Figure 11 displays the first few lines of *terraform.state* file us
 <figcaption><strong>Figure 11: </strong> Terraform state </figcaption>
 </figure>
 
-When *terraform apply* is issued to create the infrastructure, the *terraform.state* file is automatically generated. Therefore, the file is not supposed to be edited manually. The purpose of the state file is only for Terraform to keep an internal record about the deployed infrastructure resources, and to use the it as a reference when configuration changes are made in future.
+When *terraform apply* is issued to create the infrastructure, the *terraform.state* file is automatically generated. Therefore, the state file is not supposed to be edited manually. The purpose of the state file is only for Terraform to keep an internal record about the deployed infrastructure resources, and to use the it as a reference when configuration changes are made in future.
 
 ## Terraform State and Team Working
 While keeping a local copy of the **terraform.state** file is fine for an individual-based work, it is not suitable for team-based working. In the latter, team members can be adding and removing resources using Terraform. In that case, there is a coordination challenge if members of the team are keeping the sate file locally. For example, if a team member issued **terraform destroy** on their local host, their **terraform.state** file would look as follows.

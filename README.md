@@ -839,7 +839,7 @@ Accordingly, you can customize the following steps to configure Terraform to use
     terraform apply
   ```
 * Change Terraform to use the **S3 bucket** as its **remote backend** using the AWS resources created in the first step above. To that end, add the following configuration to the **terraform {...}** block.
-* ```bash
+  ```bash
     terraform {
       // ...
       backend "s3" {

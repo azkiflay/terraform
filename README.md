@@ -633,7 +633,7 @@ When "*terraform plan*" command is executed with a remote backend, Terraform dow
 Terraform supports several remote backends, including HashCorp's own [HCP Terraform](https://developer.hashicorp.com/terraform/cloud-docs) and [Terraform Enterprise](https://developer.hashicorp.com/terraform/enterprise), and other vendor-specific solutions. For AWS, Terraform supports [Amazon Simple Storage Service (S3)](https://developer.hashicorp.com/terraform/language/backend/s3) as a remote backend. Notably, every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing versions of the *terraform.state* file. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
 ## Amazon S3 as Terraform Backend
-To use an Amazon S3 as a remote backend to store *terraform.state*, you will need to make configuration changes locally. But before you do that, you need to create an Amazon S3 bucket that can be utilized as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console after logging in to your AWS account. Note that you cannot have "_" in the name as that is invalid character for an S3 bucket. Moreover, the bucket name must be globally unique across all AWS customers. Therefor, if you do not choose a unique name, expect an error stating that a file name has been already taken. In such a case, you will need to come up with a name that is unlikely to have been used by other customers.
+To use an Amazon S3 as a remote backend to store *terraform.state*, you will need to make configuration changes locally. But before you do that, you need to create an Amazon S3 bucket that can be utilized as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console after logging in to your AWS account. 
 
 <figure>
 <table>
@@ -646,8 +646,10 @@ To use an Amazon S3 as a remote backend to store *terraform.state*, you will nee
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 11: </strong> Terraform state </figcaption>
+<figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
 </figure>
+
+Note that you cannot have "_" in the name as that is invalid character for an S3 bucket. Moreover, the bucket name must be globally unique across all AWS customers. Therefor, if you do not choose a unique name, expect an error stating that a file name has been already taken. In such a case, you will need to come up with a name that is unlikely to have been used by other customers.
 
 Alternatively, the S3 bucket can be created using the AWS CLI as shown below.
 ```bash

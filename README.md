@@ -728,11 +728,16 @@ You can see that the bucket created before (i.e., "*azkiflay-moodle-terraform-st
 
 In Terraform versions older than *1.11.0*, locking mechanism used to be handled using a *dynamodb_table* AWS resource, but that is now scheduled to be deprecated in later version. It has been replaced by the "use_lockfile", which can be used as demonstrated above. By locking access to only one user at a time, the *use_lockfile* prevents multiple Terraform processes from changing infrastructure configuration concurrently.
 
-Finally, you need to re-initialize Terraform to let it know that its **local backend** has been changed to a **remote backend**. When restarted, it will detect the configuration changes,and it will start using the S3 bucket as its backend.
+Finally, you need to re-initialize Terraform to let it know that its **local backend** has been changed to a **remote backend**. When restarted, Terraform will detect the configuration changes, and it will start using the S3 bucket as its backend.
 ```bash
   terraform init
 ```
-As you can see in Figure 14, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrupting the *terraform.state* file, race conditions, and without secrets being accidentally exposed accidentally.
+As you can see in Figure 15, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrupting the *terraform.state* file, race conditions, and without secrets being accidentally exposed accidentally.
+
+<p align="center">
+  <img src="figures/terraform_state_8.png"/> <!-- width="500" height="250"/> -->
+</p>
+<p align="center"><strong>Figure 15:</strong> Bucket doesn't exist error </p>
 
 
 

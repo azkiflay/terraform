@@ -658,11 +658,11 @@ aws s3api create-bucket \
   --region us-east-1
 ```
 
-What you want to happen next for the local *terraform.state* to be a starting point on the remote backend. Before the remote backend is configured, run *terraform init* on your local machine.
+Having initialized Terraform locally, the goal is to make the local *terraform.state* to be a starting configuration point on the remote backend. However, before setting up a remote backend, run *terraform init* on your local machine.
 ```bash
   terraform init
 ```
-Then, to change move the state file from the local host to the remote backend (the S3 bucket created earlier), create the following resources. Note that the *bucket = "azkiflay-moodle-terraform-state"* refers to the S3 bucket already created on AWS. If you not, you need to create it using as discussed above.
+Subsequently, the state file needs to be copied from the local host to the remote backend (the S3 bucket). In this case, the bucket is "*azkiflay-moodle-terraform-state**, which was created on AWS. To configure a remote S3 backend for Terraform, create the following AWS resources.
 
 ```bash
   provider "aws" {

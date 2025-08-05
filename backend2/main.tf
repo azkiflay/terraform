@@ -5,13 +5,15 @@ terraform {
       version = "~> 6.0"
     }
   }
+  
   backend "s3" {
-    bucket         = "azkiflay-moodle-terraform-state" # Must be globally unique
+    bucket         = "azkiflay-moodle-terraform-state-2" # Must be globally unique
     key            = "backend/s3/terraform.tfstate"
     region         = "us-east-1"
     use_lockfile   = true  # S3 native locking # dynamodb_table is deprecated from Terraform version 1.11.0 or higher.
     encrypt        = true
   }
+  
 }
 
 provider "aws" {
@@ -19,7 +21,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "azkiflay-moodle-terraform-state" # Must be globally unique
+  bucket = "azkiflay-moodle-terraform-state-2" # Must be globally unique
   // This is only here so we can destroy the bucket as part of automated tests. You should not copy this for production
   // usage
   force_destroy = true # Prevent accidental deletion of an important resource, such as this S3 bucket

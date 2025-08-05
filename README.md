@@ -13,6 +13,8 @@
   - [Local Terraform State](#local-terraform-state)
   - [Central Terraform State](#central-terraform-state)
   - [Amazon S3 as Terraform Backend](#amazon-s3-as-terraform-backend)
+    - [Using an S3 Bucket Created Externally](#using-an-s3-bucket-created-externally)
+    - [Using an S3 Bucket Created Using Terraform](#using-an-s3-bucket-created-using-terraform)
 - [Terraform and Configuration Management](#terraform-and-configuration-management)
   - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
   - [Ansible with Terraform](#ansible-with-terraform)
@@ -633,7 +635,10 @@ When "*terraform plan*" command is executed with a remote backend, Terraform dow
 Terraform supports several remote backends, including HashCorp's own [HCP Terraform](https://developer.hashicorp.com/terraform/cloud-docs) and [Terraform Enterprise](https://developer.hashicorp.com/terraform/enterprise), and other vendor-specific solutions. For AWS, Terraform supports [Amazon Simple Storage Service (S3)](https://developer.hashicorp.com/terraform/language/backend/s3) as a remote backend. Notably, every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing versions of the *terraform.state* file. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
 ## Amazon S3 as Terraform Backend
-To use an Amazon S3 as a remote backend to store *terraform.state*, you will need to make configuration changes locally. But before you do that, you need to create an Amazon S3 bucket that can be utilized as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console after logging in to your AWS account. 
+To use an Amazon S3 as a remote backend to store *terraform.state*, you will need to make configuration changes locally. But before you do that, you need to create an Amazon S3 bucket that can be utilized as the backend. 
+
+### Using an S3 Bucket Created Externally
+As depicted in Figure 13, the S3 bucket can be created on AWS Management Console after logging in to your AWS account. 
 
 <figure>
 <table>
@@ -767,7 +772,7 @@ Run the "*terraform apply*".
 ```bash
   terraform apply
 ```
-Indeed, a new state file was upload to the S3 bucket following the execution of the above "*terraform apply*" command on a local host. Figure 17 displays the current and old versions of the **terraform.state** file.
+Indeed, a new state file was upload to the S3 bucket following the execution of the above "*terraform apply*" command on a local host. Figure 17 displays the current and old versions of the **terraform.state** file. The fact that every version of the state file is saved on the S3 backend is particularly handy when something goes wrong, enabling you to rollback back to a previous working configuration of the infrastructure.
 
 <figure>
 <table>
@@ -783,7 +788,107 @@ Indeed, a new state file was upload to the S3 bucket following the execution of 
 <figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
 </figure>
 
+### Using an S3 Bucket Created Using Terraform
+In [the earlier subsection](###Using an S3 Bucket Created Externally), the S3 bucket was created manually on AWS. Creating the S3 bucket in that way could be helpful to understand the process of connecting Terraform with a remote backend. However, that is not the most efficient or automated way of creating infrastructure resources.
 
+Terraform itself can be used automate the whole process, including creating the S3 bucket as well as migrating the local **terraform.state** to the S3 backend. However, the AWS resources must be created in a specific order. The reason for that is because other resources in the local Terraform configuration cannot reference the S3 bucket before it exists.
+
+Accordingly, you can customize the following steps to configure Terraform to use a remote S3 backend.
+* On your local host, create the following AWS resources.
+  ```bash
+    provider "aws" {
+      region = "us-east-1"
+    }
+    resource "aws_s3_bucket" "terraform_state" {
+      bucket = "azkiflay-moodle-terraform-state-2" 
+      force_destroy = true
+    }
+    resource "aws_s3_bucket_versioning" "enabled" {
+      bucket = aws_s3_bucket.terraform_state.id
+      versioning_configuration {
+        status = "Enabled"
+      }
+    }
+    resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
+      bucket = aws_s3_bucket.terraform_state.id
+      rule {
+        apply_server_side_encryption_by_default {
+          sse_algorithm = "AES256"
+        }
+      }
+    }
+    resource "aws_s3_bucket_public_access_block" "public_access" {
+      bucket = aws_s3_bucket.terraform_state.id
+      block_public_acls       = true
+      ignore_public_acls      = true
+      block_public_policy     = true
+      restrict_public_buckets = true
+    }
+    output "s3_bucket_domain_name" {
+      value       = aws_s3_bucket.terraform_state.bucket_domain_name
+      description = "The domain name of the S3 bucket"
+    }
+  ```
+
+* Run **terraform init** using the default **local backend**.
+  ```bash
+    terraform init
+  ```
+* Run **terraform apply** with the default **local backend**.
+  ```bash
+    terraform apply
+  ```
+* Change Terraform to use the **S3 bucket** as its **remote backend** using the AWS resources created in the first step above. To that end, add the following configuration to the **terraform {...}** block.
+* ```bash
+    terraform {
+      // ...
+      backend "s3" {
+        bucket         = "azkiflay-moodle-terraform-state-2" # Must be globally unique
+        key            = "backend/s3/terraform.tfstate"
+        region         = "us-east-1"
+        use_lockfile   = true
+        encrypt        = true
+      }
+    }
+  ```
+* Run **terraform init** again on the local machine for Terraform to detect the remote S3 backend that has been setup to store the state file going forward.
+  ```bash
+    terraform init
+  ```
+* Finally, run **terraform apply** to copy the existing **terraform.state** file to the **S3 backend**.
+  ```bash
+    terraform apply
+  ```
+
+Having completed the above steps, if you obtain results that look like what is shown in Figure 18 and Figure 19, then you have successfully configured Terraform to use Amazon S3 as its remote backend.
+
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_state_12.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_state_13.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
+</figure>
+
+<figure>
+<table>
+  <tr>
+    <td>
+      <img src="figures/terraform_state_14.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+    <td>
+      <img src="figures/terraform_state_15.png"/> <!-- width="400" height="200"/> --> <br>
+    </td>
+  </tr>
+</table>
+<figcaption><strong>Figure 13: </strong> Terraform state </figcaption>
+</figure>
 
 
 

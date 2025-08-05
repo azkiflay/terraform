@@ -863,6 +863,7 @@ Accordingly, you can customize the following steps to configure Terraform to use
 Having completed the above steps, if you obtain results that look like what is shown in Figure 18 and Figure 19, then you have successfully configured Terraform to use Amazon S3 as its remote backend.
 
 <figure>
+<figcaption><strong>Figure 18: </strong> Creating S3 backend with and for Terraform, Part 1 </figcaption>
 <table>
   <tr>
     <td>
@@ -873,7 +874,6 @@ Having completed the above steps, if you obtain results that look like what is s
     </td>
   </tr>
 </table>
-<figcaption><strong>Figure 18: </strong> Creating S3 backend with and for Terraform, Part 1 </figcaption>
 </figure>
 
 <figure>

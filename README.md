@@ -19,13 +19,13 @@
 
 
 # Introduction
-Server infrastructure used to be deployed and managed manually. However, that is not the case any more because manual system administration is time-consuming, error prone and cannot be scaled up to meet requirements of fast Continuous Cntegration and Continuous Deplayment (CI/CD) software delivery pipelines. Infrastructure as Code (IaC) tools fill this gap.
+Server infrastructure used to be deployed and managed manually. However, that is not the case any more because manual system administration is time-consuming, error prone and cannot be scaled up to meet requirements of fast Continuous Integration and Continuous Deployment (CI/CD) software delivery pipelines. Infrastructure as Code (IaC) tools fill this gap.
 
 Terraform, developed by [HashiCorp](https://www.hashicorp.com/en), is an open-source IaC that is used to create and deploy infrastructure as code. It is widely used across cloud service providers, including Google Cloud Platform (GCP), Microsoft Azure, and Amazon Web Services (AWS). Terraform utilizes Application Programming Interfaces (APIs) of the cloud service providers to provision infrastructure such as virtual servers, databases, virtual networks, containers, load balancers, and so on. Interestingly, Terraform does all these in a re-usable few lines of code. 
 
-Boradly, *ad hoc scripts*, *provsioning tools*, *server templating tools*, *orchestration tools*, and *configuration management tools* are considered as other methods of implementing IaC. While Terraform falls under *provisining*, it can also be used as a configuration management tool. Examples of *server templating* include Vagrant, Packer, and Docker. Kubernetes is one of the dominant tools for orchestration to define Docker containers as code, achieving high availability and scalability of infrastructure. Terraform can be combined with tools under different categories of the IaC ecosystem to define, create and orchestrate infrastrucre.
+Broadly, *ad hoc scripts*, *provisioning tools*, *server templating tools*, *orchestration tools*, and *configuration management tools* are considered as other methods of implementing IaC. While Terraform falls under *provisioning*, it can also be used as a configuration management tool. Examples of *server templating* include Vagrant, Packer, and Docker. Kubernetes is one of the dominant tools for orchestration to define Docker containers as code, achieving high availability and scalability of infrastructure. Terraform can be combined with tools under different categories of the IaC ecosystem to define, create and orchestrate infrastructure.
 
-Apart from Terraform, there are other provisioning tools, including Puppet, Chef, Pulumi, Ansible, OpenStack, and CloudFormation. While each of the tools has its unique positioning in the IaC ecosystem, Terraform stands out because it is *agentless*, *masterless*, and it supports code *reusability*. Moreover, Terraform can be comined with other IaC tools such as the following. </br>
+Apart from Terraform, there are other provisioning tools, including Puppet, Chef, Pulumi, Ansible, OpenStack, and CloudFormation. While each of the tools has its unique positioning in the IaC ecosystem, Terraform stands out because it is *agentless*, *masterless*, and it supports code *reusability*. Moreover, Terraform can be combined with other IaC tools such as the following. </br>
 * **Terraform + Ansible**: Infrastructure provisioning using Terraform, followed by service configuration with Ansible. 
 * **Packer + Terraform**: Server templating using Packer, followed by VM deployment using Terraform.
 * **Packer + Kubernetes + Docker + Terraform**: Server templating of Kubernetes and Docker using Packer, followed by deployment of Kubernetes cluster using Terraform.
@@ -86,7 +86,7 @@ To run the following command, ensure to export the user credentials as shown ear
 ```bash
     terraform plan
 ```
-If successful, "*terraform plan*" will show you what changes will be implemented whenthe plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
+If successful, "*terraform plan*" will show you what changes will be implemented when the plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
 
 <p align="center">
   <img src="figures/terraform_plan.png"/> <!-- width="400" height="200"/> --> <br>
@@ -130,7 +130,7 @@ To implement the change, you need to run "*terraform apply*" again.
 ```bash
     terraform apply
 ```
-Now, Terraform modifies the existing instance by creating a *Name* tag, and setting the tag values as can be seen in Figure 4. The fact that Terraform displays "Refreshing state..." mesage shows that it knows that the instance has already been created. As a result, the instance has been assigned a name on AWS, as can be seen on the right side of Figure 4.
+Now, Terraform modifies the existing instance by creating a *Name* tag, and setting the tag values as can be seen in Figure 4. The fact that Terraform displays "Refreshing state..." message shows that it knows that the instance has already been created. As a result, the instance has been assigned a name on AWS, as can be seen on the right side of Figure 4.
 
 <figure>
 <table>
@@ -217,7 +217,7 @@ If everything went well up to this point, the web server should be up and ready 
 ```bash
   curl http://<moodle_instance_public_ip:8080
 ```
-In both case, you should get a "Hello, World" message, confirming the Terraform successfully executed the plan accorindg to *main.tf* and deployed the web server on the AWS EC2 instance.
+In both case, you should get a "Hello, World" message, confirming the Terraform successfully executed the plan according to *main.tf* and deployed the web server on the AWS EC2 instance.
 
 # Terraform Variables
 ## Input variables
@@ -262,7 +262,7 @@ By using output variables such as the public IP address in the example, you can 
 Cluster of web servers is necessary to minimize the risk of a single point of failure. Creating a cluster enables you to route and load balance traffic across multiple web servers. In AWS, clusters are handled using *Auto Scaling Group (ASG)*. ASG has several useful cluster functionalities. It can launch a cluster of EC2 instances, monitor their health, replace failed ones, and adjust the cluster size according to traffic load.
 
 ## Creating ASG
-To create an ASG, you need to remove the *resource "aws_instance" "moodle"*. Because the resource can create only one instance, but we want to create multiple instances (cluster) to avoid a single point of failure as well as to load balance among them. Instead, create the following *launch template* that will be later used to create a cluster. Previously, a *launch configruation* was used to created ASGs, but that has been deprecated. The preferred way to create ASGs is through *aws_launch_template*. Among other parameters, a name for each instance can be given using *tag_specifications, as well as specification of what commands to run on instance launch using *user_data*. Now, commands in *user_data* have to be passed encoded using *base64encode()*. The *lifecycle* takes care of the order of creating a new instance to replacing an old one that is to be destroyed. Notably, necessary information from the old instance has to be copied to the new before the former is replaced by the latter.
+To create an ASG, you need to remove the *resource "aws_instance" "moodle"*. Because the resource can create only one instance, but we want to create multiple instances (cluster) to avoid a single point of failure as well as to load balance among them. Instead, create the following *launch template* that will be later used to create a cluster. Previously, a *launch configuration* was used to created ASGs, but that has been deprecated. The preferred way to create ASGs is through *aws_launch_template*. Among other parameters, a name for each instance can be given using *tag_specifications, as well as specification of what commands to run on instance launch using *user_data*. Now, commands in *user_data* have to be passed encoded using *base64encode()*. The *lifecycle* takes care of the order of creating a new instance to replacing an old one that is to be destroyed. Notably, necessary information from the old instance has to be copied to the new before the former is replaced by the latter.
 ```bash
   resource "aws_launch_template" "moodle" {
         image_id      = "ami-000d841032e72b43c" # when not cluster --> ami = "ami-000d841032e72b43c" as above
@@ -303,11 +303,11 @@ Based on the *aws_launch_template*, the ASG can be created as follows. Note that
 
 In the ASG resource, the number of instances have been specified using *min_size*, *max_size* and *desired_capacity*. In other words, the ASG launches preferably *desired_capacity*, at least *min_size*, and a maximum of *max_size* EC2 instances. 
 
-Lastly, the ASG needs to be assigned a subnet, which can be set using *vpc_zone_identifier*. Virtual Private Cloud (VPC) are divided into subnets, creating smaller networks where infrastructure resources such as AWS EC2 instannces, databases and load balancers can be created. The are *public* and *private* subnets. While the latter are used for backend systems and internal networks, public subnets are connected to the Internet. Each subnet exists in one Availability Zone (AZ), which is an isolated data center in AWS. Deploying instances in multiple subnets ensures the availability of services when there is downtown at a particular AZ.
+Lastly, the ASG needs to be assigned a subnet, which can be set using *vpc_zone_identifier*. Virtual Private Cloud (VPC) are divided into subnets, creating smaller networks where infrastructure resources such as AWS EC2 instances, databases and load balancers can be created. The are *public* and *private* subnets. While the latter are used for backend systems and internal networks, public subnets are connected to the Internet. Each subnet exists in one Availability Zone (AZ), which is an isolated data center in AWS. Deploying instances in multiple subnets ensures the availability of services when there is downtown at a particular AZ.
 
 In Terraform, the *vpc_zone_identifier* is a required argument for the *aws_autoscaling_group* resource, specifying the list of subnet IDs where the ASG should launch EC2 instances. The ASG will distribute instances across multiple subnets and AZs for high availability. While a specific subnet can be assigned to the ASG, note that it is better to retrieve it using Terraform to lookup the subnet dynamically. The *data* resource is used to query your AWS VPC and subnets, and other existing data through the provider's APIs. Filters can be used to fetch information of interest (e.g., public IP address).
 
- To make these changes to your infrastructure code, add the following resouces to your *main.tf* file.
+ To make these changes to your infrastructure code, add the following resources to your *main.tf* file.
 
 ```bash
     data "aws_vpc" "default" { # Get the default VPC
@@ -354,7 +354,7 @@ Figure 6 shows the results that were obtained in the preparation of this tutoria
 <figcaption><strong>Figure 6: </strong> Creating ASG instances </figcaption>
 </figure>
 
-On the left side of Figure 6, Terraform displays messages about progress, a count of the resources it created, modified and destroyed. More importantly, Terraform prepares the actual infrastructe as defined by the configuration files on AWS, as display on the right of Figure 6. You can see that *5* instances are created according to the template
+On the left side of Figure 6, Terraform displays messages about progress, a count of the resources it created, modified and destroyed. More importantly, Terraform prepares the actual infrastructure as defined by the configuration files on AWS, as display on the right of Figure 6. You can see that *5* instances are created according to the template
 
 Notably, the ASG resource now created *5* EC2 instances based on *aws_launch_template*. In other words, five different web servers have been deployed. As stated earlier, deploying a cluster of web servers enables you to load balance among them as well as to ensure high availability of the service in case some of them fail for some reason. 
 
@@ -377,7 +377,7 @@ Change values of *min_size*, *max_size*, and *desired_capacity* to *0* and apply
   terraform apply
 ```
 
-The results are shown in Figure 7. You can see that all the ASG instances were destroyed on AWS. This happened because *min_size*, *max_size*, and *desired_capacity* were all set to *0* in the Terraform configuration file. The ability to create and destryo infrastructure with this level of ease shows the power of Terraform as an Infrastructure as Code (IaC) tool. However, caution is necessary when setting the aforementioned parameter values to *0* in production environments.
+The results are shown in Figure 7. You can see that all the ASG instances were destroyed on AWS. This happened because *min_size*, *max_size*, and *desired_capacity* were all set to *0* in the Terraform configuration file. The ability to create and destroy infrastructure with this level of ease shows the power of Terraform as an Infrastructure as Code (IaC) tool. However, caution is necessary when setting the aforementioned parameter values to *0* in production environments.
 
 <figure>
 <table>
@@ -394,7 +394,7 @@ The results are shown in Figure 7. You can see that all the ASG instances were d
 </figure>
 
 ## Load Balancer
-The ASG above creates a web server cluster usign the multiple EC2 instances. One the one hand, there are multiple web servers each with its own IP address. On the other hand, you want users to access the service using a single IP address or domain name. Load balancers address this problem by sitting as a gateway to the EC2 instances of the ASG. Users access the web servers through a load balancer, which re-directs traffic based on the status and load of each EC2 instance. For this, you can use Amazon's *Elastic Load Balancer (ELB)* service. 
+The ASG above creates a web server cluster using the multiple EC2 instances. One the one hand, there are multiple web servers each with its own IP address. On the other hand, you want users to access the service using a single IP address or domain name. Load balancers address this problem by sitting as a gateway to the EC2 instances of the ASG. Users access the web servers through a load balancer, which re-directs traffic based on the status and load of each EC2 instance. For this, you can use Amazon's *Elastic Load Balancer (ELB)* service. 
 
 Common types of ELB's include the following:
 * Application-layer Load Balancer (ALB), which load balances HTTP and HTTPS traffic
@@ -532,7 +532,7 @@ If you everything went according to the above steps, you should be able to somet
 <figcaption><strong>Figure 8: </strong> Elastic Load Balancer (ELB) </figcaption>
 </figure>
 
-Eight resources were added as shown by Terraform's message. As can been from the AWS Instnace list, **five** EC2 instances were created based on the configurations discussed earlier. Additionally, Terraform displayed the domain name of the load balancer as an output, namely, **alb_dns_name = "moodle-alb-1322738834.us-east-1.elb.amazonaws.com"** as can be seen in Figure 8. 
+Eight resources were added as shown by Terraform's message. As can been from the AWS Instance list, **five** EC2 instances were created based on the configurations discussed earlier. Additionally, Terraform displayed the domain name of the load balancer as an output, namely, **alb_dns_name = "moodle-alb-1322738834.us-east-1.elb.amazonaws.com"** as can be seen in Figure 8. 
 
 The implication is that all the five EC2 instances in the cluster can be accessed using the single domain name. You can put the domain name of the load balancer (**moodle-alb-1322738834.us-east-1.elb.amazonaws.com**) on your browser to test the web server. You should be able to get a "Hello, World" message.
 
@@ -560,7 +560,7 @@ Finally, when the life cycle of the infrastructe comes to an end, you can delete
 ```
 However, you must be careful when deleting because there is no way to recover your infrastructure if you destroyed it in this way. Therefore, you must be certain that you do NOT need any of the resources in the project whose infrastructure is to be deleted. In any case, since Terraform is an IaC tool, you can re-create the same infrastructure again by running "*terraform apply*" as long as you have your Terraform file.
 
-Note that the *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, ideintifying the right order to delete resources. 
+Note that the *destroy* operation takes somewhat longer time because Terraform need to work with a dependency tree, identifying the right order to delete resources. 
 
 Figure 10 shows Terraform's message on the local machine, stating that *8* resources were destroyed. In addition, Figure 10 displays the EC2 instances that are being deleted on AWS. On refresh, the instances were indeed terminated for good.
 
@@ -580,11 +580,11 @@ Figure 10 shows Terraform's message on the local machine, stating that *8* resou
 
 
 # Terraform State
-This section discusses how Terraform knows the infrastructure that is already in place when your run "*terraform plan*", "*terraform apply*" or similar commands. When you change the configuration of an existing infrastructure, Terraform does not create every resoruce from scracth. It detects the already available resources, and adds or modifies resources according to the latest configuration. In other words, Terraform calculates the difference between the existing configuration and the desired infrastructure state. But how does Terraform know details of the previously provisioned resources at a time when the configuration file changes to meet the desired new infrastructure state? The answer: Terraform maintains a separate **state file** to track the resources as they existed prior to the change.
+This section discusses how Terraform knows the infrastructure that is already in place when you run "*terraform plan*", "*terraform apply*" or similar commands. When you change the configuration of an existing infrastructure, Terraform does not create every resource from scratch. It detects the already available resources, and adds or modifies resources according to the latest configuration. In other words, Terraform calculates the difference between the existing configuration and the desired infrastructure state. But how does Terraform know details of the previously provisioned resources at a time when the configuration file changes to meet the desired new infrastructure state? The answer: Terraform maintains a separate **state file** to track the resources as they existed prior to the change.
 
 Terraform state is a file that records details about the infrastructure created by a Terraform configuration. The file is created for every folder where Terraform is initiated. Accordingly, a "**terraform.state**" is created, containing entries in JSON format that match **resources** to their **real-world representation**.
 
-When *terraform plan* is run, Terraform refers to the state file (**terraform.state**) to calculate what changes it needs to make to fulfill the desired infrastructe state as described in the latest configuration. Therefore, the changes that happen on every *terraform apply* consist of the difference between the current real-world infrastructure deployment (**terraform.state**) and the desired state (the latest **.tf** file).
+When *terraform plan* is run, Terraform refers to the state file (**terraform.state**) to calculate what changes it needs to make to fulfill the desired infrastructure state as described in the latest configuration. Therefore, the changes that happen on every *terraform apply* consist of the difference between the current real-world infrastructure deployment (**terraform.state**) and the desired state (the latest **.tf** file).
 
 For example, Figure 11 displays the first few lines of *terraform.state* using "*nano terraform.state*". 
 ```bash
@@ -617,7 +617,7 @@ While keeping a local copy of the **terraform.state** file is fine for an indivi
 
 As indicated by ("**resources": []**) in Figure 12, it can be seen that there are no resources according to the **terraform.state** file in the local host that belong to the team member who issued the **terraform destroy**. But how can other team members know about the fact that all resources have been destroyed now? Surely, they would have known if they had access to the latest **terraform.state**. The problem arose because of the fact that each team member is working on a local **terraform.state** file. To solve this problem, the team can work using a centralized copy of **terraform.state**.
 
-Working using a centralized **terraform.state** enables team members to know the latest state of the infrastructure before the make changes to it. However, when working using a shared **terraform.state**, there is a need to avoid a race condition in situations where multiple team members try to make changes. The possibility for a race condition is solved using locking mechanism. When a team member is making changes to the **terraform.state**, the file is locked from access by others. Other team members make their changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform process to apply changes to infrastructure, avoiding file access conflcts, data loss, and corruption of the state of the infrastructure.
+Working using a centralized **terraform.state** enables team members to know the latest state of the infrastructure before the make changes to it. However, when working using a shared **terraform.state**, there is a need to avoid a race condition in situations where multiple team members try to make changes. The possibility for a race condition is solved using locking mechanism. When a team member is making changes to the **terraform.state**, the file is locked from access by others. Other team members make their changes only after they are given access to the file lock. Effectively, the locking mechanism blocks concurrent Terraform process to apply changes to infrastructure, avoiding file access conflicts, data loss, and corruption of the state of the infrastructure.
 
 ## Remote Backend to Store Terraform State
 While Version Control Systems (VCS) such as Git are great for storing your Terraform code, VCSes are not good for storing **terraform.state** file. Because VCSes do not provide locking mechanism, which is critical for **terraform.state**. Moreover, **secrets** used in Terraform **resources** are stored in plain text. Therefore, storing **terraform.state** in VCSes such as Git would expose secrets, compromising the security of and access to your infrastructure.

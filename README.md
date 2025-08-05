@@ -740,7 +740,7 @@ Finally, you need to re-initialize Terraform to let it know that its **local bac
 As you can see in Figure 15, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrupting the *terraform.state* file, race conditions, and without secrets being accidentally exposed accidentally.
 
 <p align="center">
-  <img src="figures/terraform_state_8.png" width="500" height="250"/>
+  <img src="figures/terraform_state_8.png" width="300" height="300"/>
 </p>
 <p align="center"><strong>Figure 15:</strong> Amazon S3 Backend for Terraform </p>
 

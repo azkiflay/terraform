@@ -715,11 +715,11 @@ To that end, create the following AWS resources in **main.tf** within a **backen
     }
   }
 ```
-You can see that the bucket created before (i.e., "*azkiflay-moodle-terraform-state*") is referenced in the *terraform {}* block. Consequently, Terraform will not store its *terraform.state* on the local host, instead it will use *terraform.state* downloading it from the S3 bucket, and uploading the state file to the S3 bucket when any changes occur.
+You can see that the bucket created before (i.e., "*azkiflay-moodle-terraform-state*") is referenced in the "*terraform {}*" block. Consequently, Terraform will not store its *terraform.state* on the local host any more. Instead, it will upload the *terraform.state* to the S3 bucket after any change take place locally, and download the latest copy of the state file from the S3 bucket before making any changes to infrastructure. The result is a consistent and secure infrastructure state that is managed collaboratively by members of a team.
 
-Note that other configuration changes are also made. These include the locking mechanism (*dynamodb_table*) and the region where the S3 bucket exists. Terraform fetches these setting from other AWS resources that are created for the respective functionalities. The following summarizes configurations of these resources.
+In Terraform versions older than *1.11.0*, locking mechanism used to be handled using a *dynamodb_table* AWS resource, which is scheduled to be deprecated in later version. It has been replaced by the "use_lockfile", which can be used as demonstrated above.
 
-Finally, you need to run Terraform to apply the changes and use the S3 store as its backend, using *terraform init*.
+Finally, you need to re-initialize Terraform to let it know that its **local backend** has been changed to a **remote backend**. When restarted, it will detect the configuration changes,and it will start using the S3 bucket as its backend.
 ```bash
   terraform init
 ```

@@ -890,6 +890,7 @@ Having completed the above steps, if you obtain results that look like what is s
 <figcaption><strong>Figure 19: </strong> Creating S3 backend with and for Terraform, Part 2 </figcaption>
 </figure>
 
+As can be seen in the right side of Figure 19, a new S3 bucket (*azkiflay-moodle-terraform-state-2*) has been created as a backend for Terraform. Therefore, the **terraform.state** will be stored inside the S3 backend going forward. In this case, every AWS resource, including the S3 bucket as the backend, was created completely using Terraform. In other words, the S3 backend was created by and for Terraform.
 
 
 

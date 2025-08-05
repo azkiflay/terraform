@@ -739,7 +739,16 @@ As you can see in Figure 15, Terraform detects a remote backend "**s3**" success
 </p>
 <p align="center"><strong>Figure 15:</strong> Amazon S3 Backend for Terraform </p>
 
-Not only will Terraform detect the change from local backend to a remote backend, it will ask you to confirm if you want to use the existing infrastructure state on the local backend as a starting point of the remote backend. Since the S3 bucket is empty and created only to be used as the remote backend, confirm you choice by typing "**yes**". If you get a message that is similar to what is displayed in Figure 15, you have configure Amazon S3 bucket as a remote backend. From that point on ward, Terraform's state file (**terraform.state**) will be saved to and retrieved from the S3 backend every time any changes occur on the state of the infrastructure.
+Not only will Terraform detect the change from local backend to a remote backend, it will ask you to confirm if you want to use the existing infrastructure state on the local backend as a starting point of the remote backend. Since the S3 bucket is empty and created only to be used as the remote backend, confirm you choice by typing "**yes**". 
+
+If you get a message that is similar to what is displayed in Figure 15, you have configure Amazon S3 bucket as a remote backend. From that point on ward, Terraform's state file (**terraform.state**) will be saved to and retrieved from the S3 backend every time any changes occur on the state of the infrastructure.
+With the backend setup as discussed you can continue to use other Terraform commands as you usual. For example, after adding any AWS resource in your configuration, you can view and apply the changes, using "*terraform plan*", and "*terraform apply*", respectively.
+```bash
+  terraform plan
+  terraform apply
+```
+
+
 
 
 

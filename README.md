@@ -12,7 +12,7 @@
 - [Terraform State](#terraform-state)
   - [Local Terraform State](#local-terraform-state)
   - [Central Terraform State](#central-terraform-state)
-  - [Configuring Amazon S3 Remote Store](#configuring-amazon-s3-remote-store)
+  - [Configuring Amazon S3 as Terraform Backend](#configuring-amazon-s3-as-terraform-backend)
 - [Terraform and Configuration Management](#terraform-and-configuration-management)
   - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
   - [Ansible with Terraform](#ansible-with-terraform)
@@ -632,7 +632,7 @@ When "*terraform plan*" command is executed with a remote backend, Terraform dow
 
 Terraform supports several remote backends, including HashCorp's own [HCP Terraform](https://developer.hashicorp.com/terraform/cloud-docs) and [Terraform Enterprise](https://developer.hashicorp.com/terraform/enterprise), and other vendor-specific solutions. For AWS, Terraform supports [Amazon Simple Storage Service (S3)](https://developer.hashicorp.com/terraform/language/backend/s3) as a remote backend. Notably, every change made to your infrastructure can be retrieved from Amazon S3 due to its approach to storing versions of the *terraform.state* file. If something in your infrastructure goes wrong, you can go back to an earlier version until you find and fix the cause of the problem.
 
-## Configuring Amazon S3 Remote Store
+## Configuring Amazon S3 as Terraform Backend
 To configure Terraform to use a remote backend, you will need to make configuration changes locally. But before you do that, you need to create an S3 bucket that will be used as the backend. As depicted in Figure 13, the S3 bucket can be created on AWS Management Console. Note that you cannot have "_" in the name as that is invalid character for an S3 bucket, and the name must be globally unique across all AWS customers. Therefor, if you do not choose a common name, expect an error stating that file name has been already taken.
 
 <figure>

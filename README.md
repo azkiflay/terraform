@@ -890,7 +890,15 @@ Having completed the above steps, if you obtain results that look like what is s
 </table>
 </figure>
 
-As can be seen in the right side of Figure 19, a new S3 bucket (*azkiflay-moodle-terraform-state-2*) has been created as a backend for Terraform. Therefore, the **terraform.state** will be stored inside the S3 backend going forward. In this case, every AWS resource, including the S3 bucket as the backend, was created completely using Terraform. In other words, the S3 backend was created by and for Terraform.
+As can be seen in the right side of Figure 19, a new S3 bucket (*azkiflay-moodle-terraform-state-2*) has been created as a backend for Terraform. Therefore, the **terraform.state** will be stored inside the S3 backend going forward. In this case, every AWS resource, including the S3 bucket as the backend, was created completely using Terraform. In other words, the S3 backend was created by and for Terraform. In this section, two S3 buckets were created as backends. If you want to use only one S3 bucket, you need to be careful not overwrite an existing **terraform.state** file by using a new **key** value. 
+
+The second S3 bucket was created to show that it can be created automatically using Terraform. Otherwise, there is no need to create a second S3 bucket. As long as different **key** values are used for each, one S3 bucket can be used as a backend for several **terraform.state** files. However, note that each state file corresponds to a different infrastructure deployment. For each **workspace** or **directory**, Terraform creates a new infrastructure deployment when **terraform init** is issued. As a result, each working directory or workspace has its own **terraform.state** file.
+
+To avoid breaking your infrastructure resources, you need to create separate Terraform instances for each phase of your software development cycle. Typically, this means you will have separate folders for **development**, **staging**, and **production** phases. Accordingly, you should create a different S3 backend for each of the phases using separate AWS accounts to ensure the environments and their **terraform.state** files are isolated.
+
+
+
+
 
 
 

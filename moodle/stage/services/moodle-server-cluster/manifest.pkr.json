@@ -3,21 +3,12 @@
     {
       "name": "ubuntu-moodle",
       "builder_type": "amazon-ebs",
-      "build_time": 1754825430,
+      "build_time": 1754941878,
       "files": null,
-      "artifact_id": "us-east-1:ami-07d16dc0f3c427bcc",
-      "packer_run_uuid": "0ebb54e7-007f-0469-8da6-90fda0255578",
-      "custom_data": null
-    },
-    {
-      "name": "ubuntu-moodle",
-      "builder_type": "amazon-ebs",
-      "build_time": 1754901914,
-      "files": null,
-      "artifact_id": "us-east-1:ami-0cda5ae30521faabf",
-      "packer_run_uuid": "eac52e50-2c11-d8cd-a0b5-ce3bc7bf0968",
+      "artifact_id": "us-east-1:ami-0b9fd795ad32336ce",
+      "packer_run_uuid": "c9070101-55eb-195b-0bed-bf690a645d96",
       "custom_data": null
     }
   ],
-  "last_run_uuid": "eac52e50-2c11-d8cd-a0b5-ce3bc7bf0968"
+  "last_run_uuid": "c9070101-55eb-195b-0bed-bf690a645d96"
 }

@@ -237,7 +237,7 @@ resource "null_resource" "run_ansible" {
     }
     */
     provisioner "local-exec" {
-            command = "ansible-playbook -u ansible -i ${aws_lb.moodle.dns_name}, --private-key ${local.private_key_path} ./ansible/playbook_terraform.yml -e alb_dns_name=$(terraform output -raw alb_dns_name)"
+            command = "ansible-playbook -u ansible -i ${aws_lb.moodle.dns_name}, --private-key ${local.private_key_path} ./ansible/playbook_terraform.yml" # -e alb_dns_name=$(terraform output -raw alb_dns_name)"
         }
   }
 

@@ -32,7 +32,7 @@ build {
     "source.amazon-ebs.ubuntu-moodle"
   ]
   provisioner "ansible" {
-    playbook_file = "./playbook_packer.yml"
+    playbook_file = "playbook_packer.yml"
   }
   provisioner "shell" {
         inline = [

@@ -15,11 +15,6 @@
   - [Amazon S3 as Terraform Backend](#amazon-s3-as-terraform-backend)
     - [Using an S3 Bucket Created Externally](#using-an-s3-bucket-created-externally)
     - [Using an S3 Bucket Created Using Terraform](#using-an-s3-bucket-created-using-terraform)
-- [Building Images with Packer](#building-images-with-packer)
-  - [Shell provisioner](#shell-provisioner)
-- [Terraform and Configuration Management](#terraform-and-configuration-management)
-  - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
-  - [Ansible with Terraform](#ansible-with-terraform)
 
 
 # Introduction
@@ -903,7 +898,7 @@ To avoid breaking your infrastructure resources, you need to create separate Ter
 
 
 
-
+<!--
 
 # Terraform and Configuration Management
 Terraform can work with dedicated configuration management (CM) to automate infrastructure configuration.
@@ -949,3 +944,4 @@ The shell script that is specified within the "*user_data*" parameter runs at la
 With the **ansible.cfg** and **hosts** created at the same directory as the Terraform configuration file, the function **file()** is used copy the files to the instance launched by Terraform.
 
 Note that script passed through the *user_data* parameter is run only once during the launch of the instance. To make further changes can be made using SSH-based remote access or preferably Ansible playbooks. Instead of storing your Ansible configuration files locally, it is a good practice to store them in a secure repository. In this way, while Terraform creates the infrastructure, Ansible automates the configuration.
+-->

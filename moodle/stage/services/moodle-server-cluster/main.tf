@@ -222,65 +222,47 @@ resource "aws_security_group" "moodle_lb_sg" {
     }
 }
 
+### Ansible  ###
+data "aws_autoscaling_group" "moodle" {
+  name = aws_autoscaling_group.moodle.name
+}
+
+# Get all EC2 instances with the ASG name tag
+data "aws_instances" "asg_instances" {
+  filter {
+    name   = "tag:aws:autoscaling:groupName"
+    values = [data.aws_autoscaling_group.moodle.name]
+  }
+}
+
+# Output instance IDs
+output "asg_instance_ids" {
+  value = data.aws_instances.asg_instances.ids
+}
+
 resource "null_resource" "run_ansible" {
-    depends_on = [aws_lb.moodle]
     /*
     provisioner "remote-exec" {
         inline = ["echo 'Wait until SSH is ready'"]
-
         connection {
         type        = "ssh"
-        user        = local.ssh_user
+        user        = "ubuntu"
         private_key = file(local.private_key_path)
-        host        = aws_lb.moodle.dns_name
+        host        = "44.212.97.198"
         }
     }
     */
-    provisioner "local-exec" {
-            command = "ansible-playbook -u ansible -i ${aws_lb.moodle.dns_name}, --private-key ${local.private_key_path} ./ansible/playbook_terraform.yml" # -e alb_dns_name=$(terraform output -raw alb_dns_name)"
+
+    /*********************************************
+    * Run Ansible playbook
+    *********************************************/
+    /*
+    provisioner "local-exec" { # -u ansible
+            # command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root  -i ${aws_lb.moodle.dns_name}, --private-key ${local.private_key_path} playbook_terraform.yml -e alb_dns_name=$(terraform output -raw alb_dns_name)"
+            # command = "ansible-playbook -i '${join(",", data.aws_instance.moodle[*].private_ip)},' --private-key ${local.private_key_path} playbook_terraform.yml -e alb_dns_name=$(terraform output -raw alb_dns_name)"
+            command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${join(",", data.aws_instances.asg_instances.private_ips)},' --private-key ${local.private_key_path} playbook_terraform.yml"
         }
+    */
   }
 
-
-
-/*
-# Ansible Provisioning
-# Example to run Ansible locally on those instances:
-resource "null_resource" "run_ansible" {
-  depends_on = [aws_autoscaling_group.asg]
-
-  provisioner "local-exec" {
-    command = <<EOT
-      ansible-playbook -i '${join(",", [for inst in data.aws_instance.moodle_instances : inst.private_ip])}' playbook_terraform.yml
-    EOT
-  }
-}
-*/
-
-
-
-/*
-provisioner "remote-exec" {
-        connection {
-        type        = "ssh"
-        user        = "ubuntu" # or ec2-user, depending on AMI
-        private_key = file("~/.ssh/key_pair_moodle.pem")
-        host        = data.aws_instances.asg_instances.private_ips[*]
-        timeout     = "5m"
-        }
-        inline = ["echo SSH ready on instance."]
-    }
-    
-    provisioner "file" {
-        source      = "moodle.sh"
-        destination = "/home/ubuntu/moodle.sh"
-    }
-
-    provisioner "remote-exec" {
-        inline = [
-            "chmod +x /home/ubuntu/moodle.sh",
-            "sudo /home/ubuntu/moodle.sh"
-        ]
-    }
-
-*/
+### Bastion Host for Ansible to SSH into private IP addresses of EC2 instances in ASG

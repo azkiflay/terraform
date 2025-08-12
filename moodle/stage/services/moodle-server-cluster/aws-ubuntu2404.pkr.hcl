@@ -31,17 +31,30 @@ build {
   sources = [
     "source.amazon-ebs.ubuntu-moodle"
   ]
+  # Step 1: Make the default user passwordless sudo
+  provisioner "shell" {
+    inline = [
+      "export DBNAME=\"moodle\"",
+      "export DBUSER=\"moodle_user\"",
+      "export DBPASS=\"moodle_pass\"",
+      "export DBNAME=\"moodle\"",
+      "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/99_ubuntu_nopasswd",
+      "sudo chmod 440 /etc/sudoers.d/99_ubuntu_nopasswd"
+    ]
+  }
+
   provisioner "ansible" {
     playbook_file = "playbook_packer.yml"
   }
+
+  /*
   provisioner "shell" {
-        inline = [
-            "sudo adduser --disabled-password --gecos '' ansible",
-            "sudo usermod -aG sudo ansible",
-            "echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/90-ansible-nopasswd",
-            "sudo chmod 440 /etc/sudoers.d/90-ansible-nopasswd"
-        ]
-    }
+    scripts = [
+      "website.sh" # ,
+      # "moodle.sh"
+    ]
+  }
+  */
 
   post-processor "manifest" {
     output     = "manifest.pkr.json"

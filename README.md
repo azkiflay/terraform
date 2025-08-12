@@ -15,6 +15,8 @@
   - [Amazon S3 as Terraform Backend](#amazon-s3-as-terraform-backend)
     - [Using an S3 Bucket Created Externally](#using-an-s3-bucket-created-externally)
     - [Using an S3 Bucket Created Using Terraform](#using-an-s3-bucket-created-using-terraform)
+- [Building Images with Packer](#building-images-with-packer)
+  - [Shell provisioner](#shell-provisioner)
 - [Terraform and Configuration Management](#terraform-and-configuration-management)
   - [On launch setup using shell scripts](#on-launch-setup-using-shell-scripts)
   - [Ansible with Terraform](#ansible-with-terraform)
@@ -895,6 +897,7 @@ As can be seen in the right side of Figure 19, a new S3 bucket (*azkiflay-moodle
 The second S3 bucket was created to show that it can be created automatically using Terraform. Otherwise, there is no need to create a second S3 bucket. As long as different **key** values are used for each, one S3 bucket can be used as a backend for several **terraform.state** files. However, note that each state file corresponds to a different infrastructure deployment. For each **workspace** or **directory**, Terraform creates a new infrastructure deployment when **terraform init** is issued. As a result, each working directory or workspace has its own **terraform.state** file.
 
 To avoid breaking your infrastructure resources, you need to create separate Terraform instances for each phase of your software development cycle. Typically, this means you will have separate folders for **development**, **staging**, and **production** phases. Accordingly, you should create a different S3 backend for each of the phases using separate AWS accounts to ensure the environments and their **terraform.state** files are isolated.
+
 
 
 

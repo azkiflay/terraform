@@ -77,7 +77,7 @@ Terraform is init
 ```
 The *init* command needs to be run to start a new Terraform code. Figure 1 shows an example output with an AWS provider.
 <p align="center">
-  <img src="figures/terraform_init.png"/> <!-- width="400" height="200"/> --> <br>
+  <img src="figures/terraform_init.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 1:</strong> Terraform initialization </p>
 
@@ -88,7 +88,7 @@ To run the following command, ensure to export the user credentials as shown ear
 If successful, "*terraform plan*" will show you what changes will be implemented when the plan is enforced using "*terraform apply*". Figure 2 is a sample output of "*terraform plan*", which shows what resources will be created ("*+*" sign), deleted ("*-*") or modified ("*~*").
 
 <p align="center">
-  <img src="figures/terraform_plan.png"/> <!-- width="400" height="200"/> --> <br>
+  <img src="figures/terraform_plan.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 2:</strong> Terraform plan </p>
 
@@ -135,10 +135,10 @@ Now, Terraform modifies the existing instance by creating a *Name* tag, and sett
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_apply_3.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_apply_3.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_apply_4.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_apply_4.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -208,7 +208,7 @@ You need to run "*terraform plan*", and "*terraform apply*" again for these chan
 The final result after *apply* is shown in Figure 5 below.
 
 <p align="center">
-  <img src="figures/terraform_apply_5.png"/> <!-- width="500" height="250"/> -->
+  <img src="figures/terraform_apply_5.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 5:</strong> Creating security group </p>
 
@@ -343,10 +343,10 @@ Figure 6 shows the results that were obtained in the preparation of this tutoria
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_asg_1.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_asg_1.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_asg_2.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_asg_2.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -382,10 +382,10 @@ The results are shown in Figure 7. You can see that all the ASG instances were d
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_asg_3.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_asg_3.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_asg_4.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_asg_4.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -521,10 +521,10 @@ If you everything went according to the above steps, you should be able to somet
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_alb_1.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_alb_1.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_alb_2.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_alb_2.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -543,10 +543,10 @@ As shown in Figure 9, when one instance of the ASG was terminated, a new one sta
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_terminate_1.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_terminate_1.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_terminate_2.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_terminate_2.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -567,10 +567,10 @@ Figure 10 shows Terraform's message on the local machine, stating that *8* resou
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_destroy_1.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_destroy_1.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_destroy_2.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_destroy_2.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -596,10 +596,10 @@ For example, Figure 11 displays the first few lines of *terraform.state* file us
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_state_1.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_1.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_state_2.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_2.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -612,7 +612,7 @@ When *terraform apply* is issued to create the infrastructure, the *terraform.st
 By default, Terraform saves the state file in the current working directory on a local machine where "*terraform init*" was executed. While keeping a local copy of the *terraform.state* file is fine for an individual-based work, it is not suitable for team-based working. In the latter, team members utilize Terraform to add and remove resources. In that case, coordination challenges emerge if each member of the team keeps the sate file on their local machine. For example, if a team member issued "*terraform destroy*" on their local host, the **terraform.state** file would look like the following.
 
 <p align="center">
-  <img src="figures/terraform_state_3.png"/> <!-- width="500" height="250"/> -->
+  <img src="figures/terraform_state_3.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 12:</strong> Local Terraform state </p>
 
@@ -641,10 +641,10 @@ As depicted in Figure 13, the S3 bucket can be created on AWS Management Console
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_state_4.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_4.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_state_5.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_5.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -667,7 +667,7 @@ Having initialized Terraform locally, the goal is to make the local *terraform.s
 
 If the bucket has not been created on AWS yet, you will get an error as shown in Figure 14 below.
 <p align="center">
-  <img src="figures/terraform_state_7.png"/> <!-- width="500" height="250"/> -->
+  <img src="figures/terraform_state_7.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 14:</strong> S3 bucket does not exist error </p>
 
@@ -737,7 +737,7 @@ Finally, you need to re-initialize Terraform to let it know that its **local bac
 As you can see in Figure 15, Terraform detects a remote backend "**s3**" successfully. This means that your infrastructure configuration now will be stored remotely on the S3 bucket. Consequently, you can have multiple people working collaboratively on your infrastructure without worrying about corrupting the *terraform.state* file, race conditions, and without secrets being accidentally exposed accidentally.
 
 <p align="center">
-  <img src="figures/terraform_state_8.png" width="300" height="300"/>
+  <img src="figures/terraform_state_8.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 15:</strong> Amazon S3 Backend for Terraform </p>
 
@@ -754,7 +754,7 @@ With the backend setup as discussed you can continue to use other Terraform comm
 
 According to the above configuration, Terraform has been setup in such a way that all versions of **terraform.state** are saved on the S3 backend. Figure 16 shows the state file has been created as intended.
 <p align="center">
-  <img src="figures/terraform_state_9.png"/> <!-- width="500" height="250"/> -->
+  <img src="figures/terraform_state_9.png" style="max-width:100%; height:auto;">
 </p>
 <p align="center"><strong>Figure 16:</strong> Terraform state file on S3 </p>
 
@@ -775,10 +775,10 @@ Indeed, a new state file was upload to the S3 bucket following the execution of 
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_state_10.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_10.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_state_11.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_11.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -864,10 +864,10 @@ Having completed the above steps, if you obtain results that look like what is s
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_state_12.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_12.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_state_13.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_13.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>
@@ -878,11 +878,10 @@ Having completed the above steps, if you obtain results that look like what is s
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_state_14.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_state_14.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_state_15.png"/> <!-- width="400" height="200"/> --> <br>
-    </td>
+      <img src="figures/terraform_state_15.png" style="max-width:100%; height:auto;">
   </tr>
 </table>
 </figure>

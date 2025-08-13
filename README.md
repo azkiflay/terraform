@@ -103,10 +103,10 @@ After displaying the actions that it will take on approval, Terraform prompts yo
 <table>
   <tr>
     <td>
-      <img src="figures/terraform_apply.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_apply.png" style="max-width:100%; height:auto;">
     </td>
     <td>
-      <img src="figures/terraform_apply_2.png"/> <!-- width="400" height="200"/> --> <br>
+      <img src="figures/terraform_apply_2.png" style="max-width:100%; height:auto;">
     </td>
   </tr>
 </table>

@@ -156,6 +156,8 @@ Note that you need to save your Terraform configurations in a version control sy
     echo terraform.tfstate >> .gitignore
     echo terraform.tfstate.backup >> .gitignore
     git add .gitignore
+    git status --ignored
+    git show --name-only # Show commit list
     git add README.md
     git commit -m "Initial commit"
     git push origin main # Share your commits to your team members.

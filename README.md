@@ -152,6 +152,7 @@ Note that you need to save your Terraform configurations in a version control sy
     terraform init
     git add main.tf .terraform.lock.hcl
     echo ".terraform/" >> .gitignore
+    git rm -r --cached .terraform
     echo terraform.tfstate >> .gitignore
     echo terraform.tfstate.backup >> .gitignore
     git add .gitignore

@@ -1,0 +1,261 @@
+---
+- name: Prompt for website address
+  hosts: all
+  become: no # Don’t use sudo for localhost facts
+  # become_method: sudo
+  vars:
+    website_url: "{{ alb_dns_name }}"
+    ansible_ssh_private_key_file: ~/.ssh/key_pair_moodle.pem
+    protocol: "http://"
+    mysql_moodle_db: moodle
+    mysql_moodle_user: moodleuser2
+    mysql_moodle_password: "MyS3cureP@ssw0rd" # '{{ lookup("password", "/dev/null length=12 chars=ascii_letters,digits") }}'
+    php_version: "7.4" # '{{ lookup("pipe", "php -r \"echo PHP_MAJOR_VERSION.\'.\'.PHP_MINOR_VERSION;\"") }}'
+    admin_pass_length: 12
+
+    moodle_admin_username: admin
+    moodle_db_name: "{{ mysql_moodle_db }}"
+    moodle_db_user: "{{ mysql_moodle_user }}"
+    moodle_db_password: "{{ mysql_moodle_password }}"
+
+  # php_ini_paths:
+  # - "/etc/php/{{ php_version.stdout }}/apache2/php.ini"
+  # - "/etc/php/{{ php_version.stdout }}/cli/php.ini"
+  environment:
+    MOODLE_DB_PASS: "{{ mysql_moodle_password }}"
+
+  tasks:
+  - name: Show ALB DNS name
+    debug:
+      msg: "The ALB DNS name is {{ website_url }}"
+
+  - name: Run PHP command to get version
+    command: php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;"
+    register: php_version
+    changed_when: false
+
+  - name: Update packages
+    apt:
+      update_cache: yes
+      upgrade: dist
+    #
+
+  - name: Create a group for moodle user account
+    ansible.builtin.group:
+      name: moodlegroup
+      state: present
+  - name: Create a user for moodle
+    ansible.builtin.user:
+      name: moodleuser
+      group: moodlegroup
+      home: /home/moodleuser
+      shell: /bin/bash
+      create_home: yes
+
+  - name: Install Moodle dependencies
+    apt:
+      name:
+        - php
+        - php-mysql
+        - php-xml
+        - php-curl
+        - php-zip
+        - php-gd
+        - php-mbstring
+        - apache2
+        - php
+        - libapache2-mod-php
+        - php-mysql
+        - graphviz
+        - aspell
+        - git
+        - clamav
+        - php-pspell
+        - php-curl
+        - php-gd
+        - php-intl
+        - ghostscript
+        - php-xml
+        - php-xmlrpc
+        - php-ldap
+        - php-zip
+        - php-soap
+        - php-mbstring
+        - unzip
+        - mariadb-server
+        - mariadb-client
+        - certbot
+        - python3-certbot-apache
+        - ufw
+        - nano
+      state: present
+      update_cache: yes
+      #
+
+  - name: Ensure directory exists
+    ansible.builtin.file:
+      path: /var/www/html
+      state: directory
+      owner: moodleuser
+      group: moodlegroup
+      mode: '0755'
+    #
+
+  - name: Ensure Git is installed
+    ansible.builtin.package:
+      name: git
+      state: present
+    #
+
+  - name: Clone repository
+    ansible.builtin.git:
+      repo: 'https://github.com/moodle/moodle.git'
+      dest: /var/www/html
+      version: main   # or a specific tag/branch
+      force: yes      # overwrite changes if repo already exists
+    #
+  
+  - name: Clone and checkout MOODLE_500_STABLE
+    ansible.builtin.git:
+      repo: 'https://github.com/moodle/moodle.git'
+      dest: /var/www/html
+      version: MOODLE_500_STABLE  # equivalent to git checkout origin/MOODLE_500_STABLE
+      force: yes
+    #
+  
+  - name: Set pull.ff=only in local repo config
+    ansible.builtin.git_config:
+      name: pull.ff
+      value: only
+      scope: local
+      repo: /var/www/html
+    #
+
+  - name: Set permissions on directories in moodledata
+    find:
+      paths: /var/www/moodledata
+      file_type: directory
+    register: found_dirs
+    #
+
+  - name: Set directory permissions moodledata
+    file:
+      path: "{{ item.path }}"
+      owner: www-data
+      group: www-data
+      mode: '0700'
+    loop: "{{ found_dirs.files }}"
+    #
+
+  - name: Set permissions on files in moodledata
+    find:
+      paths: /var/www/moodledata
+      file_type: file
+    register: found_files
+    #
+
+  - name: Set file permissions moodledata
+    file:
+      path: "{{ item.path }}"
+      owner: www-data
+      group: www-data
+      mode: '0600'
+    loop: "{{ found_files.files }}"
+    #
+
+  - name: Ensure max_input_vars = 5000
+    ansible.builtin.lineinfile:
+      path: "{{ item }}"
+      regexp: '^.*max_input_vars\s*='
+      line: 'max_input_vars = 5000'
+      backrefs: yes
+    loop: "{{ php_ini_paths }}"
+    #
+
+  - name: Ensure post_max_size = 256M
+    ansible.builtin.lineinfile:
+      path: "{{ item }}"
+      regexp: '^.*post_max_size\s*='
+      line: 'post_max_size = 256M'
+      backrefs: yes
+    loop: "{{ php_ini_paths }}"
+    #
+
+  - name: Ensure upload_max_filesize = 256M
+    ansible.builtin.lineinfile:
+      path: "{{ item }}"
+      regexp: '^.*upload_max_filesize\s*='
+      line: 'upload_max_filesize = 256M'
+      backrefs: yes
+    loop: "{{ php_ini_paths }}"
+    #
+
+  - name: Ensure Moodle cron job for www-data
+    ansible.builtin.cron:
+      name: "Moodle Cron"
+      user: www-data
+      minute: "*"
+      job: "/usr/bin/php /var/www/html/moodle/admin/cli/cron.php >/dev/null 2>&1"
+    #
+
+  - name: Ensure MySQL database is present
+    community.mysql.mysql_db:
+      name: "{{ mysql_moodle_db }}"
+      encoding: utf8mb4
+      collation: utf8mb4_unicode_ci
+      state: present
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+    #
+
+  - name: Create MySQL user with password
+    community.mysql.mysql_user:
+      name: "{{ mysql_moodle_user }}"
+      host: localhost
+      password: "{{ mysql_moodle_password }}"
+      priv: "{{ mysql_moodle_db }}.*:SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER"
+      state: present
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+    #
+
+
+  - name: Debug generated Moodle user password
+    debug:
+      msg: "Moodle DB password: {{ mysql_moodle_password }}"
+    #
+
+  - name: Set ownership on Moodle directory
+    ansible.builtin.file:
+      path: /var/www/html/moodle
+      recurse: yes
+      owner: www-data
+      group: www-data
+    #
+
+  - name: Generate Moodle admin password
+    ansible.builtin.set_fact:
+      moodle_admin_password: "{{ lookup('password', '/dev/null length=' + admin_pass_length|string + ' chars=ascii_letters,digits') }}"
+    #
+
+  - name: Run Moodle CLI installer if not already installed
+    ansible.builtin.command: >
+      /usr/bin/php /var/www/html/moodle/admin/cli/install.php
+      --non-interactive
+      --lang=en
+      --wwwroot="{{ protocol }}{{ website_url }}/moodle"
+      --dataroot=/var/www/moodledata
+      --dbtype=mariadb
+      --dbhost=localhost
+      --dbname="{{moodle_db_name}}"
+      --dbuser="{{moodle_db_user}}"
+      --dbpass="{{moodle_db_password}}"
+      --fullname="Moodle Docs Step by Step Guide"
+      --shortname="SG"
+      --adminuser="{{ moodle_admin_username }}"
+      --summary=""
+      --adminpass="{{ moodle_admin_password }}"
+      --adminemail=joe@123.com
+      --agree-license
+    become_user: www-data
+    args:
+      creates: /var/www/html/moodle/config.php
+    #

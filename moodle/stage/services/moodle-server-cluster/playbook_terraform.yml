@@ -1,9 +1,0 @@
----
-- name: Moodle Installation
-  hosts: all
-  become: no # Don’t use sudo for localhost facts
-  tasks:
-  - name: Update packages
-    apt:
-      update_cache: yes
-      upgrade: dist

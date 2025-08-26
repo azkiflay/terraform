@@ -4,3 +4,7 @@ aws/.terraform/providers/registry.terraform.io/hashicorp/aws/6.6.0/linux_amd64/L
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
+moodle
+backend2
+.terraform
+*.tfstate*

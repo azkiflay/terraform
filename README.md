@@ -146,7 +146,7 @@ Now, Terraform modifies the existing instance by creating a *Name* tag, and sett
 <figcaption><strong>Figure 4: </strong> Modifying an existing instance </figcaption>
 </figure>
 
-Note that you need to save your Terraform configurations in a version control system (VCS) such as Git to be able to collaborate with your team. For example, you can create a Github repository and clone it. Moreover, ensure you add large Terraform files to "*.gitignore*" as follows.
+Note that you need to save your Terraform configurations in a version control system (VCS) such as Git to be able to collaborate with your team. For example, you can create a Github repository and clone it. Moreover, ensure you add large Terraform files to "*.gitignore*" as follows. 
 ```bash
     git clone https://github.com/azkiflay/terraform.git
     terraform init

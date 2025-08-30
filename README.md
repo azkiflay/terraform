@@ -157,7 +157,7 @@ Note that you need to save your Terraform configurations in a version control sy
     echo terraform.tfstate.backup >> .gitignore
     git add .gitignore
     git status --ignored
-    git rm -r --cached
+    git rm -r --cached .terraform
     git show --name-only # Show commit list
     git add README.md
     git commit -m "Initial commit"
